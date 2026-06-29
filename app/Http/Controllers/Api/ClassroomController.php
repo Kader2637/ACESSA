@@ -75,7 +75,7 @@ class ClassroomController extends Controller
 
     public function classroomTeacher($id)
     {
-        $classroom = Classroom::where('user_id', $id)->get();
+        $classroom = Classroom::where('user_id', $id)->with('semester')->get();
         return response()->json([
             'status' => 'success',
             'data' => $classroom
@@ -103,6 +103,8 @@ class ClassroomController extends Controller
             'statusClass' => $request->statusClass,
             'description' => $request->description,
             'thumbnail' => $request->file('thumbnail')->store('thumbnails'),
+            'semester_id' => $request->semester_id,
+            'sks' => $request->sks,
         ]);
 
         return response()->json([
@@ -154,7 +156,9 @@ class ClassroomController extends Controller
             'limit' => $request->limit,
             'statusClass' => $request->statusClass,
             'description' => $request->description,
-            'thumbnail' => $thumbnailPath
+            'thumbnail' => $thumbnailPath,
+            'semester_id' => $request->semester_id,
+            'sks' => $request->sks,
         ]);
 
         return response()->json([

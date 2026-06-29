@@ -116,3 +116,15 @@ Route::patch('/assigment/grade/{id}', [AssigmentAsesmentTaskController::class, '
 
 // count student
 Route::get('count/student/{id}', [StudentClassroomRelationController::class, 'countStudent']);
+
+// Zoom SDK & Live Captioning
+Route::post('/zoom/signature', [App\Http\Controllers\Api\ZoomController::class, 'generateSignature']);
+Route::post('/live-captions', [App\Http\Controllers\Api\LiveCaptionController::class, 'store']);
+Route::get('/live-captions', [App\Http\Controllers\Api\LiveCaptionController::class, 'getCaptions']);
+Route::get('/semesters', [App\Http\Controllers\Api\SemesterController::class, 'index']);
+Route::get('/student/khs', [App\Http\Controllers\Api\StudentCourseController::class, 'getKhsData']);
+
+// Zoom Meetings per Course
+Route::get('/zoom-meetings/{course_id}', [App\Http\Controllers\Api\ZoomMeetingController::class, 'index']);
+Route::post('/zoom-meetings', [App\Http\Controllers\Api\ZoomMeetingController::class, 'store']);
+Route::delete('/zoom-meetings/{id}', [App\Http\Controllers\Api\ZoomMeetingController::class, 'destroy']);

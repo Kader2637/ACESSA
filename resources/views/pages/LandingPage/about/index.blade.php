@@ -1,6 +1,6 @@
 @extends('layouts.landingpage.app')
 
-@section('title', 'Tentang Kami - New Learning Era')
+@section('title', 'Tentang Kami - ACESSA')
 
 @section('style')
 <script src="https://cdn.tailwindcss.com"></script>
@@ -90,7 +90,7 @@
             </h1>
             
             <p data-aos="fade-up" data-aos-delay="200" class="text-lg md:text-xl text-slate-500 font-medium leading-relaxed mb-10 max-w-3xl mx-auto">
-                New Learning Era adalah platform edukasi digital generasi baru. Kami memadukan arsitektur sistem yang canggih dengan kurikulum praktis untuk mencetak talenta IT berstandar industri.
+                ACESSA adalah platform edukasi digital generasi baru. Kami memadukan arsitektur sistem yang canggih dengan kurikulum praktis untuk mencetak talenta IT berstandar industri.
             </p>
 
             <div data-aos="fade-up" data-aos-delay="300" class="flex flex-col sm:flex-row justify-center gap-4">

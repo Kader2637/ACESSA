@@ -28,7 +28,9 @@ class StoreClassroomRequest extends FormRequest
             'description' => 'required',
             'thumbnail' => 'required',
             'statusClass' => 'required',
-            'user_id' => 'nullable'
+            'user_id' => 'nullable',
+            'semester_id' => 'required|exists:semesters,id',
+            'sks' => 'required|integer|min:1|max:8'
         ];
     }
 }

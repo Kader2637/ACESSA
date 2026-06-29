@@ -18,7 +18,7 @@
                 <span class="text-indigo-400">{{ auth()->user()->name }}</span> 👋
             </h2>
             <p class="mt-3 text-slate-400 font-medium max-w-md leading-relaxed">
-                Lanjutkan perjalanan belajarmu di NLE ERA. Selesaikan setiap modul untuk memperkuat portofolio teknismu.
+                Lanjutkan perjalanan belajarmu di ACESSA. Selesaikan setiap modul untuk memperkuat portofolio teknismu.
             </p>
         </div>
 
@@ -83,7 +83,7 @@
                                     <img src="${courseThumbnail}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                                     <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
                                     <div class="absolute top-4 left-4">
-                                        <span class="px-3 py-1 bg-white/90 backdrop-blur text-indigo-600 font-black text-[9px] uppercase tracking-widest rounded-lg shadow-sm">NLE ERA</span>
+                                        <span class="px-3 py-1 bg-white/90 backdrop-blur text-indigo-600 font-black text-[9px] uppercase tracking-widest rounded-lg shadow-sm">ACESSA</span>
                                     </div>
                                 </div>
                                 <div class="p-6 flex flex-col flex-grow">

@@ -18,4 +18,8 @@ class Classroom extends Model
     public function studentClassroomRelations() {
         return $this->hasMany(StudentClassroomRelation::class);
     }
+
+    public function semester() {
+        return $this->belongsTo(Semester::class);
+    }
 }

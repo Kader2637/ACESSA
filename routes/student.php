@@ -21,6 +21,8 @@ Route::prefix('student')->middleware(['auth', CheckRole::class . ':student'])->g
     Route::get('/taskColection', function () {
         return view('pages.student.TaskColection.taskColection');
     }) ->name('taskColection');
+
+    Route::get('/khs', [App\Http\Controllers\Api\StudentCourseController::class, 'khsPage'])->name('student.khs');
 });
 
 Route::middleware(['auth',CheckRole::class . ':student'])->group(function () {

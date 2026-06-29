@@ -23,12 +23,14 @@ class UpdateClassroomRequest extends FormRequest
     {
         return [
             'user_id' => 'nullable|integer',
-                'name' => 'nullable|string',
-                'codeClass' => 'nullable|string',
-                'limit' => 'nullable|integer',
-                'description' => 'nullable|string',
-                'thumbnail' => 'nullable|file',
-                'statusClass' => 'nullable|in:private,public'
+            'name' => 'nullable|string',
+            'codeClass' => 'nullable|string',
+            'limit' => 'nullable|integer',
+            'description' => 'nullable|string',
+            'thumbnail' => 'nullable|file',
+            'statusClass' => 'nullable|in:private,public',
+            'semester_id' => 'nullable|exists:semesters,id',
+            'sks' => 'nullable|integer|min:1|max:8'
         ];
     }
 }

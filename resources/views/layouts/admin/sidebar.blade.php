@@ -37,7 +37,7 @@
             <img src="{{ asset('favicon.png') }}" class="w-9 h-9 rounded-xl object-cover" alt="">
             <div class="overflow-hidden">
                 <p class="text-[11px] font-black text-slate-900 truncate">System Management</p>
-                <p class="text-[8px] font-bold text-indigo-500 uppercase tracking-tighter">NLE System</p>
+                <p class="text-[8px] font-bold text-indigo-500 uppercase tracking-tighter">ACESSA System</p>
             </div>
         </div>
 

@@ -15,15 +15,23 @@
 @endsection
 
 @section('content')
-<div class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm" data-aos="fade-down">
+<div class="mb-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm" data-aos="fade-down">
     <div>
         <h2 class="text-3xl font-black text-slate-900 tracking-tight">Daftar <span class="text-indigo-600">Kelas</span></h2>
         <p class="text-slate-500 font-medium mt-1 uppercase text-[10px] tracking-widest text-indigo-500">Pusat Kendali Pengajaran</p>
     </div>
-    <button onclick="openModal('create')" class="inline-flex items-center gap-2 px-8 py-4 bg-indigo-600 text-white font-black uppercase text-[11px] tracking-widest rounded-2xl hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 transition-all active:scale-95 group">
-        <svg class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
-        Buat Kelas Baru
-    </button>
+    <div class="flex flex-col md:flex-row items-stretch md:items-center gap-4">
+        <div class="flex items-center gap-2.5 bg-slate-50 border border-slate-200 rounded-2xl px-4 py-2 shrink-0">
+            <label class="text-[10px] font-black uppercase tracking-wider text-slate-400 shrink-0">Filter Semester:</label>
+            <select id="filter-semester" class="bg-transparent text-xs font-bold text-slate-700 outline-none cursor-pointer">
+                <option value="all">Semua Semester</option>
+            </select>
+        </div>
+        <button onclick="openModal('create')" class="inline-flex items-center justify-center gap-2 px-8 py-4 bg-indigo-600 text-white font-black uppercase text-[11px] tracking-widest rounded-2xl hover:bg-indigo-700 shadow-lg shadow-indigo-500/30 transition-all active:scale-95 group shrink-0">
+            <svg class="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+            Buat Kelas Baru
+        </button>
+    </div>
 </div>
 
 <div class="table-container shadow-xl shadow-slate-200/50 mb-12">
@@ -66,9 +74,19 @@
                         <div class="flex items-center gap-2 bg-slate-50 px-3 rounded-xl border border-slate-200 shrink-0"><input type="checkbox" id="autoGenerateCode" class="w-4 h-4 text-indigo-600 rounded cursor-pointer"><span class="text-[9px] font-black text-slate-500 uppercase">Auto</span></div>
                     </div>
                 </div>
-                <div><label class="text-[10px] font-black uppercase text-slate-400 mb-2 block ml-1 tracking-widest">Limit Siswa</label><input type="number" name="limit" class="custom-input"></div>
-                <div class="col-span-full"><label class="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Thumbnail</label><input type="file" name="thumbnail" class="custom-input"></div>
-                <div class="col-span-full"><label class="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Deskripsi</label><textarea name="description" rows="3" class="custom-input"></textarea></div>
+                <div><label class="text-[10px] font-black uppercase text-slate-400 mb-2 block ml-1 tracking-widest">Limit Siswa</label><input type="number" name="limit" class="custom-input" required></div>
+                <div>
+                    <label class="text-[10px] font-black uppercase text-slate-400 mb-2 block ml-1 tracking-widest">Semester</label>
+                    <select name="semester_id" id="create-semester-select" class="custom-input font-bold" required>
+                        <option value="">Pilih Semester</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black uppercase text-slate-400 mb-2 block ml-1 tracking-widest">Bobot SKS</label>
+                    <input type="number" name="sks" min="1" max="8" value="3" class="custom-input" required>
+                </div>
+                <div class="col-span-full"><label class="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Thumbnail</label><input type="file" name="thumbnail" class="custom-input" required></div>
+                <div class="col-span-full"><label class="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Deskripsi</label><textarea name="description" rows="3" class="custom-input" required></textarea></div>
                 <div class="col-span-full flex justify-end gap-3 mt-4">
                     <button type="button" onclick="closeModal('create')" class="px-8 py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl">Batal</button>
                     <button type="submit" class="px-10 py-4 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl hover:bg-indigo-600">Simpan Kelas</button>
@@ -103,9 +121,19 @@
                         <div class="flex items-center gap-2 bg-slate-50 px-3 rounded-xl border border-slate-200 shrink-0"><input type="checkbox" id="autoGenerateCodeEdit" class="w-4 h-4 text-indigo-600 rounded cursor-pointer"><span class="text-[9px] font-black text-slate-500 uppercase">Auto</span></div>
                     </div>
                 </div>
-                <div><label class="text-[10px] font-black uppercase text-slate-400 mb-2 block ml-1 tracking-widest">Limit</label><input type="number" id="edit-limit" name="limit" class="custom-input"></div>
-                <div class="col-span-full"><label class="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Thumbnail</label><input type="file" name="thumbnail" class="custom-input"></div>
-                <div class="col-span-full"><label class="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Deskripsi</label><textarea id="edit-description" name="description" rows="3" class="custom-input"></textarea></div>
+                <div><label class="text-[10px] font-black uppercase text-slate-400 mb-2 block ml-1 tracking-widest">Limit</label><input type="number" id="edit-limit" name="limit" class="custom-input" required></div>
+                <div>
+                    <label class="text-[10px] font-black uppercase text-slate-400 mb-2 block ml-1 tracking-widest">Semester</label>
+                    <select name="semester_id" id="edit-semester-select" class="custom-input font-bold" required>
+                        <option value="">Pilih Semester</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-[10px] font-black uppercase text-slate-400 mb-2 block ml-1 tracking-widest">Bobot SKS</label>
+                    <input type="number" name="sks" id="edit-sks" min="1" max="8" class="custom-input" required>
+                </div>
+                <div class="col-span-full"><label class="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Thumbnail (Opsional)</label><input type="file" name="thumbnail" class="custom-input"></div>
+                <div class="col-span-full"><label class="text-[10px] font-black uppercase text-slate-400 mb-2 block tracking-widest">Deskripsi</label><textarea id="edit-description" name="description" rows="3" class="custom-input" required></textarea></div>
                 <div class="col-span-full flex justify-end gap-3 mt-4">
                     <button type="button" onclick="closeModal('edit')" class="px-8 py-4 bg-slate-100 text-slate-600 font-bold rounded-2xl">Batal</button>
                     <button type="submit" class="px-10 py-4 bg-indigo-600 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl shadow-lg">Update</button>
@@ -162,50 +190,99 @@
         $('#codeClass-edit').val(this.checked ? generateClassCode() : '');
     });
 
+    let allClassrooms = [];
+    
+    // Load semesters for selectors
+    const loadSemesters = () => {
+        fetch('/api/semesters')
+            .then(r => r.json())
+            .then(res => {
+                if (res.success) {
+                    const filterSelect = $('#filter-semester');
+                    const createSelect = $('#create-semester-select');
+                    const editSelect = $('#edit-semester-select');
+                    
+                    filterSelect.empty().append('<option value="all">Semua Semester</option>');
+                    createSelect.empty().append('<option value="">Pilih Semester</option>');
+                    editSelect.empty().append('<option value="">Pilih Semester</option>');
+                    
+                    res.data.forEach(sem => {
+                        filterSelect.append(`<option value="${sem.id}">${sem.name}</option>`);
+                        createSelect.append(`<option value="${sem.id}" ${sem.is_active ? 'selected' : ''}>${sem.name}</option>`);
+                        editSelect.append(`<option value="${sem.id}">${sem.name}</option>`);
+                    });
+                }
+            });
+    };
+
     const fetchClassData = () => {
         $.ajax({
             url: `/api/classroom/teacher/data/{{ auth()->user()->id }}`,
             method: 'GET',
             success: function(res) {
-                let rows = '';
-                if (res.data.length > 0) {
-                    res.data.forEach((k, i) => {
-                        const safeDesc = k.description.replace(/'/g, "\\'").replace(/"/g, '&quot;');
-                        rows += `
-                        <tr class="hover:bg-slate-50/80 transition-all duration-300">
-                            <td class="px-8 py-6 text-center text-slate-400 font-black">${i + 1}</td>
-                            <td class="px-6 py-6"><img src="/storage/${k.thumbnail}" class="w-24 h-14 object-cover rounded-xl border shadow-sm"></td>
-                            <td class="px-6 py-6">
-                                <div class="font-black text-slate-900 text-sm tracking-tight">${k.name}</div>
-                                <div class="text-[10px] text-indigo-500 font-bold uppercase tracking-widest mt-0.5">${k.codeClass}</div>
-                            </td>
-                            <td class="px-6 py-6 text-center text-slate-500 font-bold">${k.limit} Siswa</td>
-                            <td class="px-6 py-6 text-center"><span class="px-3 py-1.5 rounded-lg text-[9px] font-black uppercase ${k.status === 'accept' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}">${k.status}</span></td>
-                            <td class="px-8 py-6 text-right">
-                                <div class="flex justify-end gap-2.5">
-                                    <a href="/teacher/classroom/course/${k.id}" class="p-3 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
-                                    </a>
-                                    <button onclick="prepareEdit('${k.id}', '${k.codeClass}', '${k.name}', '${k.limit}', '${k.thumbnail}', '${safeDesc}', '${k.statusClass}')" class="p-3 bg-amber-50 text-amber-600 rounded-xl hover:bg-amber-600 hover:text-white transition-all shadow-sm">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
-                                    </button>
-                                    <button onclick="prepareDelete('${k.id}')" class="p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm">
-                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
-                                    </button>
-                                </div>
-                            </td>
-                        </tr>`;
-                    });
-                } else {
-                    rows = `<tr><td colspan="6" class="py-24 text-center text-slate-400 font-bold">Belum Ada Data Kelas</td></tr>`;
+                if (res.status === 'success') {
+                    allClassrooms = res.data;
+                    renderClassrooms();
                 }
-                $('#classroom-data').html(rows);
             }
         });
     };
 
-    function prepareEdit(id, code, name, limit, thumb, desc, statusClass) {
-        $('#editClassId').val(id); $('#codeClass-edit').val(code); $('#edit-nama').val(name); $('#edit-limit').val(limit); $('#edit-description').val(desc);
+    const renderClassrooms = () => {
+        const selectedSemester = $('#filter-semester').val();
+        let filtered = allClassrooms;
+        
+        if (selectedSemester && selectedSemester !== 'all') {
+            filtered = allClassrooms.filter(k => k.semester_id == selectedSemester);
+        }
+        
+        let rows = '';
+        if (filtered.length > 0) {
+            filtered.forEach((k, i) => {
+                const safeDesc = k.description.replace(/'/g, "\\'").replace(/"/g, '&quot;');
+                const semesterName = k.semester ? k.semester.name : 'Belum ditentukan';
+                rows += `
+                <tr class="hover:bg-slate-50/80 transition-all duration-300">
+                    <td class="px-8 py-6 text-center text-slate-400 font-black">${i + 1}</td>
+                    <td class="px-6 py-6"><img src="/storage/${k.thumbnail}" class="w-24 h-14 object-cover rounded-xl border shadow-sm"></td>
+                    <td class="px-6 py-6">
+                        <div class="font-black text-slate-900 text-sm tracking-tight">${k.name}</div>
+                        <div class="text-[10px] text-indigo-500 font-bold uppercase tracking-widest mt-0.5">${k.codeClass} &bull; ${k.sks} SKS</div>
+                        <div class="text-[9px] text-slate-400 font-medium mt-1">${semesterName}</div>
+                    </td>
+                    <td class="px-6 py-6 text-center text-slate-500 font-bold">${k.limit} Siswa</td>
+                    <td class="px-6 py-6 text-center"><span class="px-3 py-1.5 rounded-lg text-[9px] font-black uppercase ${k.status === 'accept' ? 'bg-green-50 text-green-600' : 'bg-amber-50 text-amber-600'}">${k.status}</span></td>
+                    <td class="px-8 py-6 text-right">
+                        <div class="flex justify-end gap-2.5">
+                            <a href="/teacher/classroom/course/${k.id}" class="p-3 bg-indigo-50 text-indigo-600 rounded-xl hover:bg-indigo-600 hover:text-white transition-all shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path></svg>
+                            </a>
+                            <button onclick="prepareEdit('${k.id}', '${k.codeClass}', '${k.name}', '${k.limit}', '${k.thumbnail}', '${safeDesc}', '${k.statusClass}', '${k.semester_id || ''}', '${k.sks || 3}')" class="p-3 bg-amber-50 text-amber-600 rounded-xl hover:bg-amber-600 hover:text-white transition-all shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
+                            </button>
+                            <button onclick="prepareDelete('${k.id}')" class="p-3 bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                            </button>
+                        </div>
+                    </td>
+                </tr>`;
+            });
+        } else {
+            rows = `<tr><td colspan="6" class="py-24 text-center text-slate-400 font-bold">Belum Ada Data Kelas</td></tr>`;
+        }
+        $('#classroom-data').html(rows);
+    };
+
+    $('#filter-semester').on('change', renderClassrooms);
+
+    function prepareEdit(id, code, name, limit, thumb, desc, statusClass, semesterId, sks) {
+        $('#editClassId').val(id); 
+        $('#codeClass-edit').val(code); 
+        $('#edit-nama').val(name); 
+        $('#edit-limit').val(limit); 
+        $('#edit-description').val(desc);
+        $('#edit-semester-select').val(semesterId);
+        $('#edit-sks').val(sks);
         $('#img-thumbnail-edit').attr('src', `/storage/${thumb}`);
         if (statusClass === 'public') $('#edit-status-public').prop('checked', true); else $('#edit-status-private').prop('checked', true);
         openModal('edit');
@@ -237,6 +314,9 @@
         });
     });
 
-    $(document).ready(fetchClassData);
+    $(document).ready(function() {
+        loadSemesters();
+        fetchClassData();
+    });
 </script>
 @endsection

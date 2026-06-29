@@ -104,9 +104,19 @@
 
                     if (c.type === 'link' && c.link) {
                         $('#link').removeClass('hidden');
+                        const isZoom = c.link.includes('zoom.us') || c.link.includes('zoom.com');
                         if (c.link.includes('youtube.com') || c.link.includes('youtu.be')) {
                             const vidId = new URL(c.link).searchParams.get('v') || c.link.split('/').pop();
                             $('#link').html(`<div class="aspect-video"><iframe class="w-full h-full rounded-[2.5rem]" src="https://www.youtube.com/embed/${vidId}" frameborder="0" allowfullscreen></iframe></div>`);
+                        } else if (isZoom) {
+                            $('#link').html(`
+                                <div class="bg-slate-900 text-white p-10 rounded-[3rem] text-center border border-slate-800 shadow-xl flex flex-col items-center gap-4">
+                                    <div class="w-16 h-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center text-3xl">📹</div>
+                                    <h4 class="text-xl font-bold uppercase tracking-tight">Materi Rapat Zoom</h4>
+                                    <p class="text-slate-400 text-sm max-w-md">Mata kuliah ini menggunakan Zoom Meeting. Klik tombol di bawah untuk membukanya secara langsung.</p>
+                                    <a href="${c.link}" target="_blank" class="mt-2 px-8 py-3.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl text-xs font-black uppercase tracking-wider text-white transition-all shadow-lg">Buka Zoom Meeting</a>
+                                </div>
+                            `);
                         } else {
                             $('#link').html(`<iframe src="${c.link}" class="w-full h-[700px] rounded-[2.5rem]" frameborder="0"></iframe>`);
                         }

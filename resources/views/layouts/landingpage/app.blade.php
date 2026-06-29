@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>@yield('title', 'New Learning Era')</title>
+    <title>@yield('title', 'ACESSA')</title>
 
     {{-- Google Font Premium (Tech Startup Vibe) --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">

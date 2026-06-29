@@ -59,7 +59,7 @@
                     <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Kode Akses Kelas</label>
                     <input type="text" id="classCodeInput" 
                         class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-bold placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-500/10 transition-all text-center tracking-widest" 
-                        placeholder="CONTOH: NLE-123">
+                        placeholder="CONTOH: ACS-123">
                 </div>
             </div>
             <div class="grid grid-cols-2 gap-4 mt-10">
@@ -123,7 +123,7 @@
                                     <img src="${courseThumbnail}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
                                     <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
                                     <div class="absolute top-4 left-4">
-                                        <span class="px-3 py-1 bg-white/90 backdrop-blur text-indigo-600 font-black text-[9px] uppercase tracking-widest rounded-lg shadow-sm">NLE ERA</span>
+                                        <span class="px-3 py-1 bg-white/90 backdrop-blur text-indigo-600 font-black text-[9px] uppercase tracking-widest rounded-lg shadow-sm">ACESSA</span>
                                     </div>
                                 </div>
                                 <div class="p-6 flex flex-col flex-grow">

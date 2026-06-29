@@ -1,6 +1,6 @@
 @extends('layouts.landingpage.app')
 
-@section('title', 'New Learning Era - Master Your Tech Stack')
+@section('title', 'ACESSA - Master Your Tech Stack')
 
 @section('style')
 <script src="https://cdn.tailwindcss.com"></script>
@@ -105,10 +105,10 @@
                                 <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
                                 <div class="w-3 h-3 rounded-full bg-emerald-500"></div>
                             </div>
-                            <div class="mx-auto text-xs font-mono text-slate-400">index.js — NLE_Core</div>
+                            <div class="mx-auto text-xs font-mono text-slate-400">index.js — ACESSA_Core</div>
                         </div>
                         <div class="p-5 font-mono text-sm leading-relaxed text-slate-300">
-                            <p><span class="text-fuchsia-400">import</span> { LearningSystem } <span class="text-fuchsia-400">from</span> <span class="text-emerald-400">'@nle/core'</span>;</p>
+                            <p><span class="text-fuchsia-400">import</span> { LearningSystem } <span class="text-fuchsia-400">from</span> <span class="text-emerald-400">'@acessa/core'</span>;</p>
                             <br/>
                             <p><span class="text-indigo-400">const</span> <span class="text-blue-400">student</span> = <span class="text-fuchsia-400">new</span> <span class="text-yellow-300">LearningSystem</span>();</p>
                             <p><span class="text-blue-400">student</span>.<span class="text-yellow-300">initialize</span>({</p>

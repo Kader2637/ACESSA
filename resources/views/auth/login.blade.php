@@ -1,6 +1,6 @@
 @extends('layouts.landingpage.app')
 
-@section('title', 'Masuk – New Learning Era')
+@section('title', 'Masuk – ACESSA')
 
 @section('style')
 <style>

@@ -11,7 +11,7 @@
 
     <link rel="icon" href="{{ asset('favicon.png') }}" type="image/x-icon">
     <link rel="shortcut icon" href="{{ asset('favicon.png') }}" type="image/x-icon">
-    <title>New Learning Era</title>
+    <title>ACESSA</title>
     <link rel="icon" type="image/png" sizes="16x16" href="images/favicon.png">
     <link href="{{ asset('assetsTeacher/css/style.css') }}" rel="stylesheet">
 </head>

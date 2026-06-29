@@ -27,6 +27,7 @@
 
 <div class="mb-10 flex border-b border-slate-200 gap-10">
     <button onclick="switchTab('materi')" id="btn-materi" class="pb-4 text-sm font-bold text-slate-400 nav-tab-active transition-all">Isi Materi</button>
+    <button onclick="switchTab('zoom')" id="btn-zoom" class="pb-4 text-sm font-bold text-slate-400 transition-all">Pertemuan Zoom</button>
     <button onclick="switchTab('tugas')" id="btn-tugas" class="pb-4 text-sm font-bold text-slate-400 transition-all">Penugasan</button>
 </div>
 
@@ -56,6 +57,18 @@
     </div>
 
     <div id="text" class="bg-white p-10 md:p-16 rounded-[3rem] border border-slate-100 shadow-sm prose prose-indigo max-w-none prose-img:rounded-3xl prose-headings:font-black"></div>
+</div>
+
+<div id="content-zoom" class="tab-content hidden animate-fade-in">
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10">
+        <div>
+            <h3 class="text-xl font-black text-slate-900 tracking-tight">Pertemuan Kelas Zoom</h3>
+            <p class="text-slate-400 text-xs font-medium">Bergabung ke kelas video konferensi langsung yang dijadwalkan oleh pengajar Anda.</p>
+        </div>
+    </div>
+
+    <div id="zoom-loading-message" class="py-20 text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest animate-pulse">Memuat jadwal pertemuan...</div>
+    <div id="zoom-meetings-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
 </div>
 
 <div id="content-tugas" class="tab-content hidden animate-fade-in">
@@ -104,6 +117,10 @@
         $(`#content-${tab}`).removeClass('hidden');
         $('[id^="btn-"]').removeClass('nav-tab-active text-indigo-600').addClass('text-slate-400');
         $(`#btn-${tab}`).addClass('nav-tab-active text-indigo-600').removeClass('text-slate-400');
+        
+        if (tab === 'zoom') {
+            fetchZoomMeetings();
+        }
     }
 
     function fetchTaskData() {
@@ -213,12 +230,112 @@
 
                     if (course.type === 'link' && course.link) {
                         const isYoutube = course.link.includes('youtube.com') || course.link.includes('youtu.be');
-                        const videoId = isYoutube ? (new URL(course.link).searchParams.get('v') || course.link.split('/').pop()) : null;
+                        const isZoom = course.link.includes('zoom.us') || course.link.includes('zoom.com');
                         
-                        $('#link').removeClass('hidden').html(isYoutube 
-                            ? `<div class="video-container shadow-2xl shadow-indigo-100"><iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe></div>`
-                            : `<div class="bg-white p-5 rounded-[3rem] border border-slate-100 shadow-2xl overflow-hidden"><iframe src="${course.link}" class="w-full h-[700px] rounded-[2rem]" frameborder="0"></iframe></div>`
-                        );
+                        if (isZoom) {
+                            try {
+                                const urlObj = new URL(course.link);
+                                const pathParts = urlObj.pathname.split('/');
+                                const jIndex = pathParts.indexOf('j');
+                                if (jIndex !== -1 && pathParts[jIndex + 1]) {
+                                    meetingNumber = pathParts[jIndex + 1];
+                                } else {
+                                    meetingNumber = course.link.match(/\/j\/(\d+)/)[1];
+                                }
+                                passcode = urlObj.searchParams.get('pwd') || '';
+                            } catch (e) {
+                                console.error('Failed to parse Zoom URL', e);
+                            }
+                            
+                            $('#link').removeClass('hidden').html(`
+                                <div id="zoom-meeting-container" class="relative bg-slate-950 rounded-[3rem] p-8 text-white min-h-[450px] flex flex-col items-center justify-center overflow-hidden shadow-2xl border border-slate-900">
+                                    <div class="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(79,70,229,0.1),transparent)] pointer-events-none"></div>
+                                    
+                                    <div id="zoom-lobby" class="z-10 text-center flex flex-col items-center gap-6 max-w-md">
+                                        <div class="w-20 h-20 bg-indigo-500/10 rounded-[2rem] flex items-center justify-center text-4xl shadow-inner animate-pulse">📹</div>
+                                        <div>
+                                            <h3 class="text-2xl font-black tracking-tight mb-2 uppercase">Kelas Zoom Virtual</h3>
+                                            <p class="text-slate-400 text-sm font-medium leading-relaxed">Bergabung ke kelas video konferensi langsung di dalam portal pembelajaran ini.</p>
+                                        </div>
+                                        <button id="btn-join-zoom" class="px-8 py-4.5 bg-indigo-600 hover:bg-indigo-500 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl shadow-xl shadow-indigo-600/30 transition-all active:scale-95">
+                                            Gabung Kelas Sekarang
+                                        </button>
+                                    </div>
+                                    
+                                    <div id="meetingSDKElement" class="hidden w-full h-[650px] rounded-[2rem] overflow-hidden bg-slate-900 border border-slate-800 z-10"></div>
+                                </div>
+                                
+                                <!-- Accessibility Toggle -->
+                                <div class="mt-6 flex justify-between items-center bg-white border border-slate-200 rounded-[2rem] p-6 shadow-sm">
+                                    <div class="flex items-center gap-3">
+                                        <div class="w-10 h-10 bg-indigo-50 text-indigo-600 rounded-xl flex items-center justify-center text-lg">♿</div>
+                                        <div>
+                                            <h5 class="text-sm font-black text-slate-800">Fitur Aksesibilitas Disabilitas</h5>
+                                            <p class="text-[10px] text-slate-400 font-bold uppercase">Subtitel & Terjemahan Suara Otomatis</p>
+                                        </div>
+                                    </div>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" id="toggle-disability" class="sr-only peer">
+                                        <div class="w-14 h-7 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[4px] after:left-[4px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-5 after:w-6 after:transition-all peer-checked:bg-indigo-600"></div>
+                                    </label>
+                                </div>
+                                
+                                <!-- Disability Panel -->
+                                <div id="disability-panel" class="hidden mt-4 bg-slate-900 border border-slate-850 rounded-[2.5rem] p-6 shadow-xl relative overflow-hidden">
+                                    <div class="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-2xl"></div>
+                                    <div class="relative z-10">
+                                        <div class="flex flex-wrap items-center justify-between gap-4 mb-5 pb-5 border-b border-slate-800/60">
+                                            <div class="flex items-center gap-2">
+                                                <span class="w-2 h-2 bg-indigo-500 rounded-full animate-ping" id="caption-status-dot"></span>
+                                                <span class="text-[9px] font-black uppercase text-slate-400 tracking-[0.2em]">Penerjemah Subtitle Aktif</span>
+                                            </div>
+                                            <div class="flex flex-wrap items-center gap-4 text-white">
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[9px] font-black text-slate-500 uppercase">Bahasa Sumber:</span>
+                                                    <select id="spoken-lang" class="bg-slate-800 border border-slate-700 text-xs rounded-xl px-3 py-1.5 font-bold focus:outline-none cursor-pointer">
+                                                        <option value="id-ID">Bahasa Indonesia</option>
+                                                        <option value="en-US">English</option>
+                                                        <option value="ja-JP">日本語</option>
+                                                    </select>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[9px] font-black text-slate-500 uppercase">Bahasa Target:</span>
+                                                    <select id="subtitle-lang" class="bg-slate-800 border border-slate-700 text-xs rounded-xl px-3 py-1.5 font-bold focus:outline-none cursor-pointer">
+                                                        <option value="id">Bahasa Indonesia</option>
+                                                        <option value="en">English</option>
+                                                        <option value="ja">日本語</option>
+                                                        <option value="ar">العربية</option>
+                                                        <option value="zh">中文</option>
+                                                    </select>
+                                                </div>
+                                                <div class="flex items-center gap-2">
+                                                    <span class="text-[9px] font-black text-slate-500 uppercase">Ukuran Teks:</span>
+                                                    <select id="font-size" class="bg-slate-800 border border-slate-700 text-xs rounded-xl px-3 py-1.5 font-bold focus:outline-none cursor-pointer">
+                                                        <option value="text-lg">Normal</option>
+                                                        <option value="text-2xl" selected>Besar</option>
+                                                        <option value="text-3xl">Sangat Besar</option>
+                                                        <option value="text-4xl">Maksimal (Disabilitas)</option>
+                                                    </select>
+                                                </div>
+                                                <button id="btn-toggle-mic" class="px-4 py-2 bg-indigo-600/20 text-indigo-400 border border-indigo-500/30 hover:bg-indigo-600/30 font-black text-[9px] uppercase tracking-wider rounded-xl transition-all active:scale-95">
+                                                    Aktifkan Mic Saya
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div id="subtitles-display-box" class="min-h-[120px] max-h-[220px] overflow-y-auto bg-black/50 border border-slate-800 rounded-2xl p-5 flex flex-col justify-end text-center">
+                                            <p id="active-subtitle-text" class="text-yellow-400 font-extrabold text-2xl tracking-wide leading-relaxed drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">
+                                                Menunggu pembicara bersuara...
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            `);
+                        } else if (isYoutube) {
+                            const videoId = new URL(course.link).searchParams.get('v') || course.link.split('/').pop();
+                            $('#link').removeClass('hidden').html(`<div class="video-container shadow-2xl shadow-indigo-100"><iframe src="https://www.youtube.com/embed/${videoId}" allowfullscreen></iframe></div>`);
+                        } else {
+                            $('#link').removeClass('hidden').html(`<div class="bg-white p-5 rounded-[3rem] border border-slate-100 shadow-2xl overflow-hidden"><iframe src="${course.link}" class="w-full h-[700px] rounded-[2rem]" frameborder="0"></iframe></div>`);
+                        }
                     } else if (course.type === 'document' && course.document) {
                         $('#document').removeClass('hidden');
                         let pdfDoc = null, pageNum = 1;
@@ -246,5 +363,318 @@
                 }
             });
     });
+
+    // Zoom & Disability Features Variables
+    let meetingNumber = '';
+    let passcode = '';
+    let zoomSignature = '';
+    let zoomSdkKey = '';
+    let captionPollInterval = null;
+    let lastCaptionId = 0;
+    let recognition = null;
+    let isRecognizing = false;
+    let captionTimeout = null;
+
+    // Join Zoom Meeting SDK
+    $(document).on('click', '#btn-join-zoom', function() {
+        const btn = $(this);
+        btn.prop('disabled', true).html('<div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mx-auto"></div>');
+        
+        $.ajax({
+            url: '/api/zoom/signature',
+            method: 'POST',
+            data: {
+                meeting_number: meetingNumber,
+                role: 0
+            },
+            success: function(sigRes) {
+                zoomSignature = sigRes.signature;
+                zoomSdkKey = sigRes.sdkKey;
+                
+                $('#zoom-lobby').addClass('hidden');
+                $('#meetingSDKElement').removeClass('hidden');
+                
+                initializeZoomSDK();
+            },
+            error: function() {
+                toastr.error('Gagal mendapatkan signature Zoom. Kredensial tidak valid.');
+                btn.prop('disabled', false).html('Gabung Kelas Sekarang');
+            }
+        });
+    });
+
+    function initializeZoomSDK() {
+        const meetingSDKElement = document.getElementById('meetingSDKElement');
+        
+        ZoomMtgEmbedded.createClient().init({
+            zoomAppRoot: meetingSDKElement,
+            language: 'en-US'
+        }).then((client) => {
+            client.join({
+                sdkKey: zoomSdkKey,
+                signature: zoomSignature,
+                meetingNumber: meetingNumber,
+                passCode: passcode,
+                userName: '{{ auth()->user()->name }}',
+                userEmail: '{{ auth()->user()->email }}'
+            }).then(() => {
+                toastr.success('Berhasil terhubung ke Zoom Meeting!');
+            }).catch((err) => {
+                console.error('Failed to join Zoom meeting', err);
+                toastr.error('Gagal bergabung ke Zoom Meeting.');
+            });
+        }).catch((err) => {
+            console.error('Failed to init Zoom Web SDK', err);
+            toastr.error('Inisialisasi Zoom Web SDK gagal.');
+        });
+    }
+
+    // Toggle Disability Features
+    $(document).on('change', '#toggle-disability', function() {
+        const checked = this.checked;
+        const panel = $('#disability-panel');
+        
+        if (checked) {
+            panel.removeClass('hidden').addClass('block');
+            startCaptionPolling();
+            toastr.success('Fitur disabilitas (subtitle) diaktifkan!');
+        } else {
+            panel.removeClass('block').addClass('hidden');
+            stopCaptionPolling();
+            stopMic();
+            toastr.info('Fitur disabilitas dinonaktifkan.');
+        }
+    });
+
+    function startCaptionPolling() {
+        if (captionPollInterval) clearInterval(captionPollInterval);
+        
+        captionPollInterval = setInterval(() => {
+            $.ajax({
+                url: `/api/live-captions?course_id=${courseId}&last_id=${lastCaptionId}`,
+                method: 'GET',
+                success: function(capRes) {
+                    if (capRes.success && capRes.data.length > 0) {
+                        capRes.data.forEach(caption => {
+                            lastCaptionId = Math.max(lastCaptionId, caption.id);
+                            processCaption(caption.text, caption.language, caption.user.name);
+                        });
+                    }
+                }
+            });
+        }, 2000);
+    }
+
+    function stopCaptionPolling() {
+        if (captionPollInterval) {
+            clearInterval(captionPollInterval);
+            captionPollInterval = null;
+        }
+    }
+
+    function processCaption(text, srcLang, speakerName) {
+        const targetLang = $('#subtitle-lang').val();
+        const srcLangShort = srcLang.split('-')[0];
+        
+        if (srcLangShort !== targetLang && targetLang !== 'none') {
+            const langPair = `${srcLangShort}|${targetLang}`;
+            const apiUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${langPair}`;
+            
+            fetch(apiUrl)
+                .then(r => r.json())
+                .then(transRes => {
+                    if (transRes.responseData && transRes.responseData.translatedText) {
+                        renderSubtitleText(speakerName, transRes.responseData.translatedText, true);
+                    } else {
+                        renderSubtitleText(speakerName, text, false);
+                    }
+                })
+                .catch(() => {
+                    renderSubtitleText(speakerName, text, false);
+                });
+        } else {
+            renderSubtitleText(speakerName, text, false);
+        }
+    }
+
+    function renderSubtitleText(speaker, text, isTranslated) {
+        const fontSize = $('#font-size').val();
+        const displayBox = $('#subtitles-display-box');
+        const textEl = $('#active-subtitle-text');
+        
+        textEl.removeClass('text-lg text-2xl text-3xl text-4xl').addClass(fontSize);
+        
+        const flag = isTranslated ? ' <span class="text-xs text-indigo-400 font-bold uppercase">(Translated)</span>' : '';
+        textEl.html(`<span class="text-slate-400 font-medium">${speaker}:</span> ${text}${flag}`);
+        
+        displayBox.scrollTop(displayBox[0].scrollHeight);
+        
+        if (captionTimeout) clearTimeout(captionTimeout);
+        captionTimeout = setTimeout(() => {
+            textEl.html('<span class="text-slate-600 font-medium">Menunggu pembicara bersuara...</span>');
+        }, 12000);
+    }
+
+    // Toggle Mic Captions
+    $(document).on('click', '#btn-toggle-mic', function() {
+        if (isRecognizing) {
+            stopMic();
+        } else {
+            startMic();
+        }
+    });
+
+    function startMic() {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        if (!SpeechRecognition) {
+            toastr.error('Browser Anda tidak mendukung Web Speech API untuk caption.');
+            return;
+        }
+        
+        recognition = new SpeechRecognition();
+        recognition.continuous = true;
+        recognition.interimResults = false;
+        recognition.lang = $('#spoken-lang').val();
+        
+        recognition.onstart = function() {
+            isRecognizing = true;
+            $('#btn-toggle-mic').removeClass('bg-indigo-600/20 text-indigo-400 border-indigo-500/30')
+                .addClass('bg-red-600 text-white border-red-500')
+                .text('Nonaktifkan Mic');
+            $('#caption-status-dot').removeClass('bg-indigo-500').addClass('bg-red-500');
+            toastr.success('Caption Mikrofon Aktif!');
+        };
+        
+        recognition.onresult = function(event) {
+            const resultIndex = event.resultIndex;
+            const transcript = event.results[resultIndex][0].transcript.trim();
+            
+            if (transcript) {
+                $.ajax({
+                    url: '/api/live-captions',
+                    method: 'POST',
+                    data: {
+                        course_id: courseId,
+                        text: transcript,
+                        language: $('#spoken-lang').val()
+                    },
+                    success: function() {
+                        renderSubtitleText('{{ auth()->user()->name }} (Saya)', transcript, false);
+                    }
+                });
+            }
+        };
+        
+        recognition.onerror = function(event) {
+            console.error('Speech Recognition Error', event);
+        };
+        
+        recognition.onend = function() {
+            if (isRecognizing) {
+                recognition.start();
+            }
+        };
+        
+        recognition.start();
+    }
+
+    function stopMic() {
+        isRecognizing = false;
+        if (recognition) {
+            recognition.stop();
+        }
+        $('#btn-toggle-mic').addClass('bg-indigo-600/20 text-indigo-400 border-indigo-500/30')
+            .removeClass('bg-red-650 text-white border-red-500')
+            .text('Aktifkan Mic Saya');
+        $('#caption-status-dot').addClass('bg-indigo-500').removeClass('bg-red-500');
+    }
+
+    // ZOOM HISTORY TABS FUNCTIONS FOR STUDENT
+    function fetchZoomMeetings() {
+        $('#zoom-loading-message').show();
+        $('#zoom-meetings-container').empty();
+        
+        $.ajax({
+            url: `/api/zoom-meetings/${courseId}`,
+            method: 'GET',
+            success: function(res) {
+                $('#zoom-loading-message').hide();
+                if (res.success && res.data.length > 0) {
+                    res.data.forEach(meet => {
+                        const dateStr = new Date(meet.meeting_time).toLocaleString('id-ID', {
+                            dateStyle: 'medium',
+                            timeStyle: 'short'
+                        });
+                        
+                        let meetNum = '';
+                        let pwd = '';
+                        try {
+                            const urlObj = new URL(meet.zoom_link);
+                            const pathParts = urlObj.pathname.split('/');
+                            const jIndex = pathParts.indexOf('j');
+                            if (jIndex !== -1 && pathParts[jIndex + 1]) {
+                                meetNum = pathParts[jIndex + 1];
+                            } else {
+                                meetNum = meet.zoom_link.match(/\/j\/(\d+)/)[1];
+                            }
+                             pwd = meet.passcode || urlObj.searchParams.get('pwd') || '';
+                        } catch (e) {}
+
+                        const descHtml = meet.description ? `<p class="text-slate-500 text-xs font-medium mb-3 leading-relaxed">${meet.description}</p>` : '';
+                        const card = `
+                            <div class="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all flex flex-col justify-between">
+                                <div class="text-left">
+                                    <div class="flex items-center justify-between mb-4">
+                                        <span class="px-3.5 py-1.5 bg-indigo-50 text-indigo-600 font-black text-[9px] uppercase tracking-widest rounded-xl">Virtual Class</span>
+                                        <span class="text-[10px] font-bold text-slate-400">${dateStr}</span>
+                                    </div>
+                                    <h4 class="text-base font-black text-slate-900 mb-1 leading-tight">${meet.title}</h4>
+                                    ${descHtml}
+                                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-6">ID: ${meetNum} &bull; Passcode: ${pwd}</p>
+                                </div>
+                                <div class="flex items-center gap-3">
+                                    <button onclick="startZoomSession('${meet.zoom_link}', '${pwd}')" class="flex-1 py-3.5 bg-indigo-600 text-white font-black uppercase text-[9px] tracking-wider rounded-2xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-2">
+                                        📹 Gabung Rapat
+                                    </button>
+                                </div>
+                            </div>
+                        `;
+                        $('#zoom-meetings-container').append(card);
+                    });
+                } else {
+                    $('#zoom-meetings-container').html(`
+                        <div class="col-span-full py-16 bg-white border border-dashed border-slate-200 rounded-[3rem] text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest">
+                            Belum ada pertemuan Zoom terjadwal dari dosen.
+                        </div>
+                    `);
+                }
+            },
+            error: function() {
+                $('#zoom-loading-message').hide();
+                toastr.error('Gagal mengambil data pertemuan Zoom.');
+            }
+        });
+    }
+
+    function startZoomSession(link, rawPasscode) {
+        try {
+            const urlObj = new URL(link);
+            const pathParts = urlObj.pathname.split('/');
+            const jIndex = pathParts.indexOf('j');
+            let meetingNumber = '';
+            if (jIndex !== -1 && pathParts[jIndex + 1]) {
+                meetingNumber = pathParts[jIndex + 1];
+            } else {
+                meetingNumber = link.match(/\/j\/(\d+)/)[1];
+            }
+            const passcode = rawPasscode || urlObj.searchParams.get('pwd') || '';
+            
+            // Redirect to standalone zoom-session view in a new window/tab
+            const zoomUrl = `/zoom-session?meeting_number=${meetingNumber}&passcode=${encodeURIComponent(passcode)}&role=0&course_id=${courseId}`;
+            window.open(zoomUrl, '_blank');
+        } catch (e) {
+            toastr.error('Format tautan Zoom tidak valid.');
+        }
+    }
 </script>
 @endsection

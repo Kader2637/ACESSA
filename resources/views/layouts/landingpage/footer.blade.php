@@ -4,7 +4,7 @@
             
             {{-- Bagian Kiri: Copyright --}}
             <div class="text-sm font-medium text-slate-500 text-center md:text-left">
-                &copy; {{ date('Y') }} <span class="font-extrabold text-slate-900 tracking-tight">New Learning Era</span>. All rights reserved.
+                &copy; {{ date('Y') }} <span class="font-extrabold text-slate-900 tracking-tight">ACESSA</span>. All rights reserved.
             </div>
             
             {{-- Bagian Kanan: Link & Badge --}}

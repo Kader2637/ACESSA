@@ -1,6 +1,6 @@
 @extends('layouts.landingpage.app')
 
-@section('title', 'Katalog Kelas – New Learning Era')
+@section('title', 'Katalog Kelas – ACESSA')
 
 @section('style')
 <style>
@@ -122,7 +122,7 @@
                 const desc = c.description
                     ? (c.description.length > 90 ? c.description.substring(0, 90) + '...' : c.description)
                     : 'Modul komprehensif yang dirancang untuk mempercepat karir teknologi Anda.';
-                const mentor = c.user_name || "Instruktur NLE";
+                const mentor = c.user_name || "Instruktur ACESSA";
                 const initials = mentor.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
 
                 // UI CARD (SUPER CLEAN TAILWIND)

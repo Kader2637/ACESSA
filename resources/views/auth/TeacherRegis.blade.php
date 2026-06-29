@@ -1,6 +1,6 @@
 @extends('layouts.landingpage.app')
 
-@section('title', 'Daftar Instruktur – New Learning Era')
+@section('title', 'Daftar Instruktur – ACESSA')
 
 @section('style')
 <style>
