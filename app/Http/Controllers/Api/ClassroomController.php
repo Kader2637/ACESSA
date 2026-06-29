@@ -95,6 +95,11 @@ class ClassroomController extends Controller
      */
     public function store(StoreClassroomRequest $request)
     {
+        $thumbnailPath = null;
+        if ($request->hasFile('thumbnail')) {
+            $thumbnailPath = $request->file('thumbnail')->store('thumbnails', 'public');
+        }
+
         $classroom = Classroom::create([
             'name' => $request->name,
             'user_id' => $request->user_id,
@@ -102,7 +107,7 @@ class ClassroomController extends Controller
             'limit' => $request->limit,
             'statusClass' => $request->statusClass,
             'description' => $request->description,
-            'thumbnail' => $request->file('thumbnail')->store('thumbnails'),
+            'thumbnail' => $thumbnailPath,
             'semester_id' => $request->semester_id,
             'sks' => $request->sks,
         ]);
@@ -139,11 +144,11 @@ class ClassroomController extends Controller
     public function update(UpdateClassroomRequest $request, Classroom $classroom)
     {
         if ($request->hasFile('thumbnail')) {
-            if ($classroom->thumbnail && Storage::exists('public/storage/' . $classroom->thumbnail)) {
-                Storage::delete('public/storage/' . $classroom->thumbnail);
+            if ($classroom->thumbnail && Storage::disk('public')->exists($classroom->thumbnail)) {
+                Storage::disk('public')->delete($classroom->thumbnail);
             }
 
-            $thumbnailPath = $request->file('thumbnail')->store('classroom-thumbnails', 'public');
+            $thumbnailPath = $request->file('thumbnail')->store('thumbnails', 'public');
         } else {
             $thumbnailPath = $classroom->thumbnail;
         }

@@ -51,6 +51,7 @@ Route::get('/teacher/classroom/show/{classroom}' , [ClassroomTeacherController::
 Route::get('/teacher/data/classroom/{id}' , [ClassroomController::class , 'studentCourse']);
 Route::get('/teacher' , [UserController::class , 'teacherAll']);
 Route::delete('/user/delete/{user}' , [UserController::class , 'destroy']);
+Route::post('/user/profile/update', [UserController::class, 'profileUpdate'])->middleware('auth');
 
 // Course Teacher
 Route::post('/teacher/course/create', [CourseController::class, 'store']);
