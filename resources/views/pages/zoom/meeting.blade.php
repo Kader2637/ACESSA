@@ -231,7 +231,7 @@
             gap: 8px !important;
             width: 100% !important;
             padding: 12px !important;
-            background: #dc2626 !important;
+            background: #475569 !important;
             color: #fff !important;
             font-size: 10px !important;
             font-weight: 900 !important;
@@ -241,7 +241,28 @@
             text-decoration: none !important;
             transition: background 0.15s ease !important;
         }
-        .btn-exit:hover { background: #b91c1c !important; }
+        .btn-exit:hover { background: #334155 !important; }
+
+        .btn-danger {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            gap: 8px !important;
+            width: 100% !important;
+            padding: 12px !important;
+            background: #dc2626 !important;
+            color: #fff !important;
+            font-size: 10px !important;
+            font-weight: 900 !important;
+            text-transform: uppercase !important;
+            letter-spacing: 0.12em !important;
+            border-radius: 12px !important;
+            text-decoration: none !important;
+            transition: background 0.15s ease !important;
+            cursor: pointer;
+            border: none;
+        }
+        .btn-danger:hover { background: #b91c1c !important; }
     </style>
 </head>
 <body>
@@ -377,7 +398,10 @@
             </div>
 
             <!-- Exit button -->
-            <div style="padding:1.25rem;">
+            <div style="padding:1.25rem;" class="flex flex-col gap-2">
+                @if(request()->query('role') == '1')
+                    <button id="btn-end-meeting" class="btn-danger">🛑 Akhiri Sesi Kelas</button>
+                @endif
                 <a href="#" id="btn-back-to-course" class="btn-exit">🚪 Keluar Kelas</a>
             </div>
         </aside>
@@ -432,7 +456,7 @@
         // ── Fetch Schedules & Highlight Current Hour ──
         const authId = '{{ auth()->user()->id }}';
         let allMeetings = [];
-        let meetingDbId = urlParams.get('meeting_db_id') || '';
+        let meetingDbId = urlParams.get('meeting_db_id') || '{{ $meetingDbId ?? "" }}';
 
         const classesUrl = (role === 1) 
             ? `/api/my/classroom/teacher/data/${authId}`
@@ -585,6 +609,37 @@
 
         // ── Toastr config ──
         toastr.options = { positionClass: 'toast-top-right', timeOut: 3000 };
+
+        // ── End Meeting Handler ──
+        $('#btn-end-meeting').on('click', function(e) {
+            e.preventDefault();
+            if (!meetingDbId) {
+                toastr.error('ID Meeting database tidak ditemukan. Tidak dapat mengakhiri sesi.');
+                return;
+            }
+            if (confirm('Apakah Anda yakin ingin mengakhiri sesi kelas virtual ini untuk semua peserta?')) {
+                $.ajax({
+                    url: `/api/zoom-meetings/end/${meetingDbId}`,
+                    method: 'POST',
+                    headers: {
+                        'X-CSR-Token': $('meta[name="csrf-token"]').attr('content')
+                    },
+                    success: function(res) {
+                        if (res.success) {
+                            toastr.success('Sesi kelas virtual telah berhasil diakhiri.');
+                            setTimeout(() => {
+                                window.location.href = '/teacher';
+                            }, 1500);
+                        } else {
+                            toastr.error(res.message || 'Gagal mengakhiri sesi.');
+                        }
+                    },
+                    error: function(xhr) {
+                        toastr.error('Error saat menghubungi server.');
+                    }
+                });
+            }
+        });
 
         // ── Speech Transcriptions & Custom Subtitles ──
         let isSubtitlesEnabled = true;

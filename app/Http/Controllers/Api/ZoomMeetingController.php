@@ -17,7 +17,7 @@ class ZoomMeetingController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $meetings
+            'data' => $meetings,
         ]);
     }
 
@@ -35,7 +35,7 @@ class ZoomMeetingController extends Controller
         $zoomLink = $request->zoom_link;
         $passcode = $request->manual_passcode;
 
-        if ($zoomLink && !$passcode) {
+        if ($zoomLink && ! $passcode) {
             $urlParts = parse_url($zoomLink);
             if (isset($urlParts['query'])) {
                 parse_str($urlParts['query'], $queryParts);
@@ -46,7 +46,7 @@ class ZoomMeetingController extends Controller
         }
 
         // If no manual link is provided, attempt to auto-generate via API
-        if (!$zoomLink) {
+        if (! $zoomLink) {
             $accountId = config('services.zoom.account_id');
             $clientId = config('services.zoom.client_id');
             $clientSecret = config('services.zoom.client_secret');
@@ -55,7 +55,7 @@ class ZoomMeetingController extends Controller
                 try {
                     // Request Access Token from Zoom (Server-to-Server OAuth)
                     $tokenResponse = Http::withoutVerifying()->asForm()->withHeaders([
-                        'Authorization' => 'Basic ' . base64_encode("$clientId:$clientSecret"),
+                        'Authorization' => 'Basic '.base64_encode("$clientId:$clientSecret"),
                     ])->post("https://zoom.us/oauth/token?grant_type=account_credentials&account_id={$accountId}");
 
                     if ($tokenResponse->successful()) {
@@ -72,8 +72,8 @@ class ZoomMeetingController extends Controller
                                 'join_before_host' => true,
                                 'jbh_time' => 0,
                                 'mute_upon_entry' => true,
-                                'waiting_room' => false
-                            ]
+                                'waiting_room' => false,
+                            ],
                         ]);
 
                         if ($meetingResponse->successful()) {
@@ -81,27 +81,28 @@ class ZoomMeetingController extends Controller
                             $passcode = $meetingResponse->json()['password'];
                         } else {
                             $errData = $meetingResponse->json();
+
                             return response()->json([
                                 'success' => false,
-                                'message' => 'API Zoom gagal membuat rapat: ' . ($errData['message'] ?? 'Unknown Error')
+                                'message' => 'API Zoom gagal membuat rapat: '.($errData['message'] ?? 'Unknown Error'),
                             ], 422);
                         }
                     } else {
                         return response()->json([
                             'success' => false,
-                            'message' => 'Gagal autentikasi ke Zoom API: ' . $tokenResponse->body()
+                            'message' => 'Gagal autentikasi ke Zoom API: '.$tokenResponse->body(),
                         ], 422);
                     }
                 } catch (\Exception $e) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Koneksi ke Zoom API error: ' . $e->getMessage()
+                        'message' => 'Koneksi ke Zoom API error: '.$e->getMessage(),
                     ], 422);
                 }
             } else {
                 return response()->json([
                     'success' => false,
-                    'message' => 'Kredensial otomatis belum lengkap (.env membutuhkan ZOOM_ACCOUNT_ID). Silakan isi Tautan Zoom Manual untuk melanjutkan pengujian.'
+                    'message' => 'Kredensial otomatis belum lengkap (.env membutuhkan ZOOM_ACCOUNT_ID). Silakan isi Tautan Zoom Manual untuk melanjutkan pengujian.',
                 ], 422);
             }
         }
@@ -118,7 +119,7 @@ class ZoomMeetingController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Pertemuan Zoom berhasil dijadwalkan!',
-            'data' => $meeting
+            'data' => $meeting,
         ], 201);
     }
 
@@ -129,7 +130,7 @@ class ZoomMeetingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Pertemuan Zoom berhasil dihapus.'
+            'message' => 'Pertemuan Zoom berhasil dihapus.',
         ]);
     }
 
@@ -141,16 +142,17 @@ class ZoomMeetingController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Sesi Zoom telah diakhiri.'
+            'message' => 'Sesi Zoom telah diakhiri.',
         ]);
     }
 
     public function allMeetings()
     {
         $meetings = ZoomMeeting::with('course')->orderBy('meeting_time', 'desc')->get();
+
         return response()->json([
             'success' => true,
-            'data' => $meetings
+            'data' => $meetings,
         ]);
     }
 }

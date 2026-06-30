@@ -6,8 +6,19 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/test', [App\Http\Controllers\HomeController::class, 'testEmail']);
 
-Route::get('/zoom-session', function () {
-    return view('pages.zoom.meeting');
+Route::get('/zoom-session', function (\Illuminate\Http\Request $request) {
+    $meetingNumber = $request->query('meeting_number');
+    $meetingDbId = null;
+    if ($meetingNumber) {
+        $meeting = \App\Models\ZoomMeeting::where('zoom_link', 'like', "%{$meetingNumber}%")->first();
+        if ($meeting) {
+            if ($meeting->status === 'ended') {
+                abort(403, 'Kelas virtual ini telah diakhiri oleh Dosen/Host.');
+            }
+            $meetingDbId = $meeting->id;
+        }
+    }
+    return view('pages.zoom.meeting', compact('meetingDbId'));
 })->middleware('auth')->name('zoom.session');
 
 Route::get('/login-as-teacher', function () {
