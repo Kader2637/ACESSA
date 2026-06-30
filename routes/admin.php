@@ -23,6 +23,10 @@ Route::prefix('admin')->middleware(['auth', CheckRole::class . ':admin'])->group
 
     Route::get('/teacher/detail/{id}',[UserController::class , 'show'])->name('admin.teacher.detail');
 
+    Route::get('/student', function () {
+        return view('pages.admin.student.index');
+    })->name('admin.student');
+
     Route::get('/approval', function () {
         return view('pages.admin.approval.index');
     })->name('admin.approval');
@@ -32,5 +36,17 @@ Route::prefix('admin')->middleware(['auth', CheckRole::class . ':admin'])->group
     })->name('admin.task');
 
     Route::get('/detailTask/{taskCourse}', [TaskCourseController::class, 'show'])->name('admin.detailTask');
+
+    Route::get('/zoom', function () {
+        return view('pages.admin.zoom.index');
+    })->name('admin.zoom');
+
+    Route::get('/forum', function () {
+        return view('pages.admin.forum.index');
+    })->name('admin.forum');
+
+    Route::get('/semester', function () {
+        return view('pages.admin.semester.index');
+    })->name('admin.semester');
 
 });

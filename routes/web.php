@@ -28,9 +28,9 @@ Route::get('/check-db', function () {
 });
 
 Route::get('/test-zoom-api', function () {
-    $accountId = env('ZOOM_ACCOUNT_ID');
-    $clientId = env('ZOOM_CLIENT_ID');
-    $clientSecret = env('ZOOM_CLIENT_SECRET');
+    $accountId = config('services.zoom.account_id');
+    $clientId = config('services.zoom.client_id');
+    $clientSecret = config('services.zoom.client_secret');
 
     $tokenResponse = Http::withoutVerifying()->asForm()->withHeaders([
         'Authorization' => 'Basic ' . base64_encode("$clientId:$clientSecret"),

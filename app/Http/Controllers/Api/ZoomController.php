@@ -17,8 +17,8 @@ class ZoomController extends Controller
             'role' => 'required|integer', // 0 = attendee, 1 = host
         ]);
 
-        $sdkKey = env('ZOOM_SDK_KEY');
-        $sdkSecret = env('ZOOM_SDK_SECRET');
+        $sdkKey = config('services.zoom.sdk_key');
+        $sdkSecret = config('services.zoom.sdk_secret');
 
         // Fallback for local testing if not configured
         if (empty($sdkKey) || empty($sdkSecret)) {

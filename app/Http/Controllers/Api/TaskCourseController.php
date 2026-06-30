@@ -106,4 +106,22 @@ class TaskCourseController extends Controller
             'data' => $taskCourse
         ], 200);
     }
+
+    public function allTasks()
+    {
+        $tasks = TaskCourse::with('course')->orderBy('deadline', 'desc')->get();
+        return response()->json([
+            'status' => 'success',
+            'data' => $tasks->map(function ($t) {
+                return [
+                    'id' => $t->id,
+                    'name' => $t->name,
+                    'description' => $t->description,
+                    'deadline' => $t->deadline,
+                    'deadline_format' => \Carbon\Carbon::parse($t->deadline)->locale('id')->diffForHumans(),
+                    'course_name' => $t->course ? $t->course->name : 'Umum',
+                ];
+            })
+        ]);
+    }
 }

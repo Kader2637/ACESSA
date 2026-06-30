@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\CourseTeacherController;
 use App\Http\Controllers\Api\TaskCourseController;
+use App\Http\Controllers\Api\UserController;
 use App\Http\Middleware\CheckRole;
 use Illuminate\Support\Facades\Route;
 
@@ -49,6 +50,8 @@ Route::prefix('teacher')->middleware(['auth', CheckRole::class . ':teacher'])->g
     Route::get('/profile', function () {
         return view('pages.teacher.profile.index');
     })->name('teacher.profile');
+
+    Route::post('/profile/update', [UserController::class, 'profileUpdate'])->name('teacher.profile.update');
 });
 
 // ── Public teacher course routes ─────────────────────────

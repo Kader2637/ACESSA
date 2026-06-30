@@ -374,6 +374,8 @@
     let recognition = null;
     let isRecognizing = false;
     let captionTimeout = null;
+    let translationAbortController = null;
+    let translationTimeout = null;
 
     // Join Zoom Meeting SDK
     $(document).on('click', '#btn-join-zoom', function() {
@@ -477,14 +479,14 @@
         const srcLangShort = srcLang.split('-')[0];
         
         if (srcLangShort !== targetLang && targetLang !== 'none') {
-            const langPair = `${srcLangShort}|${targetLang}`;
-            const apiUrl = `https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${langPair}`;
+            const apiUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${srcLangShort}&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
             
             fetch(apiUrl)
                 .then(r => r.json())
                 .then(transRes => {
-                    if (transRes.responseData && transRes.responseData.translatedText) {
-                        renderSubtitleText(speakerName, transRes.responseData.translatedText, true);
+                    if (transRes && transRes[0]) {
+                        const translatedText = transRes[0].map(x => x ? x[0] : '').join('');
+                        renderSubtitleText(speakerName, translatedText, true);
                     } else {
                         renderSubtitleText(speakerName, text, false);
                     }
@@ -533,7 +535,7 @@
         
         recognition = new SpeechRecognition();
         recognition.continuous = true;
-        recognition.interimResults = false;
+        recognition.interimResults = true;
         recognition.lang = $('#spoken-lang').val();
         
         recognition.onstart = function() {
@@ -546,20 +548,63 @@
         };
         
         recognition.onresult = function(event) {
-            const resultIndex = event.resultIndex;
-            const transcript = event.results[resultIndex][0].transcript.trim();
+            let interimTranscript = '';
+            let finalTranscript = '';
             
-            if (transcript) {
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                const transcriptText = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcriptText;
+                } else {
+                    interimTranscript += transcriptText;
+                }
+            }
+            
+            const liveText = (finalTranscript + interimTranscript).trim();
+            if (!liveText) return;
+
+            const spokenLang = $('#spoken-lang').val();
+            const targetLang = $('#subtitle-lang').val();
+            const srcLangShort = spokenLang.split('-')[0];
+
+            if (targetLang && targetLang !== 'none' && srcLangShort !== targetLang) {
+                // Debounce and fetch translation in real-time
+                if (translationTimeout) clearTimeout(translationTimeout);
+                if (translationAbortController) {
+                    translationAbortController.abort();
+                }
+                translationTimeout = setTimeout(() => {
+                    translationAbortController = new AbortController();
+                    const signal = translationAbortController.signal;
+                    const apiUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${srcLangShort}&tl=${targetLang}&dt=t&q=${encodeURIComponent(liveText)}`;
+
+                    fetch(apiUrl, { signal })
+                        .then(r => r.json())
+                        .then(transRes => {
+                            if (transRes && transRes[0]) {
+                                const translatedText = transRes[0].map(x => x ? x[0] : '').join('');
+                                renderSubtitleText('{{ auth()->user()->name }} (Saya)', translatedText, true);
+                            }
+                        })
+                        .catch(err => {
+                            if (err.name !== 'AbortError') {
+                                console.error("Translation error:", err);
+                            }
+                        });
+                }, 50); // 50ms debounce
+            } else {
+                renderSubtitleText('{{ auth()->user()->name }} (Saya)', liveText, false);
+            }
+            
+            if (finalTranscript.trim()) {
+                const text = finalTranscript.trim();
                 $.ajax({
                     url: '/api/live-captions',
                     method: 'POST',
                     data: {
                         course_id: courseId,
-                        text: transcript,
-                        language: $('#spoken-lang').val()
-                    },
-                    success: function() {
-                        renderSubtitleText('{{ auth()->user()->name }} (Saya)', transcript, false);
+                        text: text,
+                        language: spokenLang
                     }
                 });
             }
@@ -620,22 +665,29 @@
                              pwd = meet.passcode || urlObj.searchParams.get('pwd') || '';
                         } catch (e) {}
 
-                        const descHtml = meet.description ? `<p class="text-slate-500 text-xs font-medium mb-3 leading-relaxed">${meet.description}</p>` : '';
+                        const isEnded = meet.status === 'ended';
+                        const statusBadge = isEnded
+                            ? `<span class="px-2 py-0.5 bg-red-50 text-red-750 border border-red-100 font-bold text-[8px] uppercase tracking-wider rounded-md">Selesai</span>`
+                            : `<span class="px-2 py-0.5 bg-indigo-50 border border-indigo-100 text-indigo-650 font-bold text-[8px] uppercase tracking-wider rounded-md">Kelas Virtual</span>`;
+
+                        const btnHtml = isEnded
+                            ? `<button class="flex-grow py-2 bg-slate-100 text-slate-400 font-bold text-xs rounded-xl cursor-not-allowed" disabled>Sesi Berakhir</button>`
+                            : `<button onclick="startZoomSession('${meet.zoom_link}', '${pwd}', '${meet.id}')" class="flex-grow py-2 bg-indigo-650 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl transition-all shadow-sm">📹 Gabung Rapat</button>`;
+
+                        const descHtml = meet.description ? `<p class="text-slate-550 text-xs font-semibold mb-3 leading-relaxed">${meet.description}</p>` : '';
                         const card = `
-                            <div class="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all flex flex-col justify-between">
+                            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:border-slate-350 transition-all flex flex-col justify-between ${isEnded ? 'opacity-60' : ''}">
                                 <div class="text-left">
                                     <div class="flex items-center justify-between mb-4">
-                                        <span class="px-3.5 py-1.5 bg-indigo-50 text-indigo-600 font-black text-[9px] uppercase tracking-widest rounded-xl">Virtual Class</span>
+                                        ${statusBadge}
                                         <span class="text-[10px] font-bold text-slate-400">${dateStr}</span>
                                     </div>
-                                    <h4 class="text-base font-black text-slate-900 mb-1 leading-tight">${meet.title}</h4>
+                                    <h4 class="text-sm font-extrabold text-slate-900 mb-1.5 leading-tight">${meet.title}</h4>
                                     ${descHtml}
-                                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-6">ID: ${meetNum} &bull; Passcode: ${pwd}</p>
+                                    <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-5">ID: ${meetNum} &bull; Passcode: ${pwd}</p>
                                 </div>
                                 <div class="flex items-center gap-3">
-                                    <button onclick="startZoomSession('${meet.zoom_link}', '${pwd}')" class="flex-1 py-3.5 bg-indigo-600 text-white font-black uppercase text-[9px] tracking-wider rounded-2xl hover:bg-indigo-700 transition-all flex items-center justify-center gap-2">
-                                        📹 Gabung Rapat
-                                    </button>
+                                    ${btnHtml}
                                 </div>
                             </div>
                         `;
@@ -643,7 +695,7 @@
                     });
                 } else {
                     $('#zoom-meetings-container').html(`
-                        <div class="col-span-full py-16 bg-white border border-dashed border-slate-200 rounded-[3rem] text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest">
+                        <div class="col-span-full py-16 bg-white border border-dashed border-slate-200 rounded-2xl text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest">
                             Belum ada pertemuan Zoom terjadwal dari dosen.
                         </div>
                     `);
@@ -656,7 +708,7 @@
         });
     }
 
-    function startZoomSession(link, rawPasscode) {
+    function startZoomSession(link, rawPasscode, dbId) {
         try {
             const urlObj = new URL(link);
             const pathParts = urlObj.pathname.split('/');
@@ -670,7 +722,7 @@
             const passcode = rawPasscode || urlObj.searchParams.get('pwd') || '';
             
             // Redirect to standalone zoom-session view in a new window/tab
-            const zoomUrl = `/zoom-session?meeting_number=${meetingNumber}&passcode=${encodeURIComponent(passcode)}&role=0&course_id=${courseId}`;
+            const zoomUrl = `/zoom-session?meeting_number=${meetingNumber}&passcode=${encodeURIComponent(passcode)}&role=0&course_id=${courseId}&meeting_db_id=${dbId}`;
             window.open(zoomUrl, '_blank');
         } catch (e) {
             toastr.error('Format tautan Zoom tidak valid.');

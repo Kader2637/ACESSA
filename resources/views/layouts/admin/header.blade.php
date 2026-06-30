@@ -1,22 +1,22 @@
-<header class="h-20 bg-white/80 backdrop-blur-md border-b border-slate-100 sticky top-0 z-[900] px-4 md:px-8 flex items-center justify-between shadow-sm transition-all duration-300">
-    <div class="flex items-center gap-3 md:gap-4 overflow-hidden">
-        <button onclick="toggleSidebar()" class="lg:hidden p-2.5 text-slate-500 bg-slate-50 hover:bg-indigo-50 hover:text-indigo-600 rounded-xl transition-all active:scale-90">
+<header class="h-20 glass-header sticky top-0 z-[900] px-6 md:px-8 flex items-center justify-between transition-all duration-300 shrink-0">
+    <div class="flex items-center gap-4">
+        <button onclick="toggleSidebar()" class="lg:hidden p-2 text-slate-500 bg-slate-100 hover:bg-slate-200 rounded-lg transition-all active:scale-95">
             <i data-feather="menu" class="w-5 h-5"></i>
         </button>
         
-        <h1 class="text-[10px] md:text-xs font-black text-slate-900 tracking-[0.1em] md:tracking-[0.2em] uppercase italic truncate max-w-[150px] md:max-w-none">
-            @yield('page_title', 'Control Center')
+        <h1 class="text-xs font-extrabold text-slate-900 tracking-wider uppercase">
+            @yield('page_title', 'Panel Kontrol')
         </h1>
     </div>
 
-    <div class="flex items-center gap-2 md:gap-4 shrink-0">
-        <div class="text-right hidden sm:block border-r border-slate-100 pr-4">
-            <p class="text-[9px] md:text-[10px] font-black text-slate-900 leading-none uppercase">Admin Account</p>
-            <p class="text-[8px] md:text-[9px] font-bold text-indigo-500 uppercase mt-1 tracking-tighter">Superuser</p>
+    <div class="flex items-center gap-4">
+        <div class="text-right hidden sm:block border-r border-slate-200 pr-4">
+            <p class="text-[11px] font-extrabold text-slate-900 leading-none">Administrator Utama</p>
+            <p class="text-[9px] font-bold text-slate-500 uppercase mt-1 tracking-widest">Sesi Aktif</p>
         </div>
         
-        <div class="w-10 h-10 md:w-11 md:h-11 bg-slate-100 rounded-xl md:rounded-2xl flex items-center justify-center border-2 border-white shadow-sm overflow-hidden shrink-0">
-            <img src="{{ asset('favicon.png') }}" class="w-full h-full object-cover" onerror="this.src='{{ asset('favicon.png') }}'">
+        <div class="w-10 h-10 bg-slate-900 rounded-lg flex items-center justify-center border border-slate-200 shadow-sm text-white font-extrabold text-sm shrink-0">
+            A
         </div>
     </div>
 </header>

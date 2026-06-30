@@ -47,9 +47,9 @@ class ZoomMeetingController extends Controller
 
         // If no manual link is provided, attempt to auto-generate via API
         if (!$zoomLink) {
-            $accountId = env('ZOOM_ACCOUNT_ID');
-            $clientId = env('ZOOM_CLIENT_ID');
-            $clientSecret = env('ZOOM_CLIENT_SECRET');
+            $accountId = config('services.zoom.account_id');
+            $clientId = config('services.zoom.client_id');
+            $clientSecret = config('services.zoom.client_secret');
 
             if ($accountId && $clientId && $clientSecret) {
                 try {
@@ -130,6 +130,27 @@ class ZoomMeetingController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Pertemuan Zoom berhasil dihapus.'
+        ]);
+    }
+
+    public function endMeeting($id)
+    {
+        $meeting = ZoomMeeting::findOrFail($id);
+        $meeting->status = 'ended';
+        $meeting->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Sesi Zoom telah diakhiri.'
+        ]);
+    }
+
+    public function allMeetings()
+    {
+        $meetings = ZoomMeeting::with('course')->orderBy('meeting_time', 'desc')->get();
+        return response()->json([
+            'success' => true,
+            'data' => $meetings
         ]);
     }
 }

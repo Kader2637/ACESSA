@@ -87,4 +87,21 @@ class ForumDiscussionController extends Controller
             'data' => $forumDiscussion
         ],200);
     }
+
+    public function allDiscussions()
+    {
+        $discussions = ForumDiscussion::with(['user', 'classroom'])->orderBy('created_at', 'desc')->get();
+        return response()->json([
+            'status' => 'success',
+            'data' => $discussions->map(function ($d) {
+                return [
+                    'id' => $d->id,
+                    'message' => $d->message,
+                    'created_at' => $d->created_at,
+                    'user_name' => $d->user ? $d->user->name : 'Anonim',
+                    'classroom_name' => $d->classroom ? $d->classroom->name : 'Umum',
+                ];
+            })
+        ]);
+    }
 }

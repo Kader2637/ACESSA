@@ -1,9 +1,9 @@
-h<!doctype html>
+<!doctype html>
 <html lang="id" class="h-full">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Dashboard - ACESSA')</title>
+    <title>@yield('title', 'Portal Mahasiswa - ACESSA')</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,7 +12,16 @@ h<!doctype html>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] }
+                    fontFamily: { sans: ['"Plus Jakarta Sans"', 'sans-serif'] },
+                    colors: {
+                        indigo: {
+                            600: '#d97706', /* map indigo-600 to amber-600 */
+                            650: '#b45309',
+                            700: '#b45309',
+                            50: '#fef3c7',
+                            100: '#fde68a',
+                        }
+                    }
                 }
             }
         }
@@ -20,29 +29,32 @@ h<!doctype html>
     <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
+    <script src="https://unpkg.com/feather-icons"></script>
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <style>
-        body { background-color: #f8fafc; color: #0f172a; overflow: hidden; }
-        .sidebar-active { background-color: #4f46e5; color: white; box-shadow: 0 10px 15px -3px rgba(79, 70, 229, 0.4); }
+        body { background-color: #fcfbfa; color: #0f172a; overflow: hidden; }
         ::-webkit-scrollbar { width: 5px; }
         ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: #f59e0b; border-radius: 10px; }
+        .toast-warning { background-color: #f59e0b !important; }
+        .toast-success { background-color: #d97706 !important; }
+        .toast-error { background-color: #ef4444 !important; }
     </style>
     @yield('style')
 </head>
 <body class="antialiased h-full">
-    <div class="flex h-screen overflow-hidden bg-[#f8fafc]">
+    <div class="flex h-screen overflow-hidden">
         
         @if (!request()->is('student/materi/detail'))
             @include('layouts.student.sidebar')
         @endif
 
-        <div class="flex-1 flex flex-col min-w-0">
+        <div class="flex-grow flex flex-col min-w-0 h-full lg:pl-64 transition-all duration-300">
             
             @include('layouts.student.header')
 
             <main class="flex-1 overflow-y-auto scroll-smooth">
-                <div class="p-4 md:p-8 lg:p-10 max-w-7xl mx-auto">
+                <div class="p-6 md:p-8 max-w-7xl mx-auto">
                     @yield('content')
                 </div>
             </main>
@@ -54,6 +66,7 @@ h<!doctype html>
     <script>
         $(document).ready(function () {
             AOS.init({ once: true, duration: 800 });
+            feather.replace();
         });
     </script>
     @yield('script')

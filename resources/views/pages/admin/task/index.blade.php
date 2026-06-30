@@ -1,169 +1,116 @@
 @extends('layouts.admin.app')
 
-@section('content')
-<div class="page-title">
-    <div class="row">
-        <div class="col-xl-4 col-sm-7 box-col-3">
-            <h3>Tugas</h3>
-        </div>
-        <div class="col-5 d-none d-xl-block">
+@section('title', 'Materi & Tugas — Panel Admin')
+@section('page_title', 'Materi &amp; Tugas Global')
 
-        </div>
-        <div class="col-xl-3 col-sm-5 box-col-4">
-            <ol class="breadcrumb">
-                <li class="breadcrumb-item">
-                    <a href="/admin/classroom">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24">
-                            <path fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"
-                                stroke-width="1.5"
-                                d="m2.25 12l8.955-8.955a1.124 1.124 0 0 1 1.59 0L21.75 12M4.5 9.75v10.125c0 .621.504 1.125 1.125 1.125H9.75v-4.875c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125V21h4.125c.621 0 1.125-.504 1.125-1.125V9.75M8.25 21h8.25" />
-                        </svg>
-                    </a>
-                </li>
-                <li class="breadcrumb-item active">Tugas</li>
-            </ol>
-        </div>
+@section('content')
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm animate-fade-in">
+    <div>
+        <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Materi &amp; <span class="text-indigo-650">Tugas Global</span></h2>
+        <p class="text-slate-400 text-xs font-semibold uppercase tracking-wider mt-0.5">Memantau dan mengevaluasi seluruh penugasan kuliah di platform ACESSA</p>
+    </div>
+    <div class="px-4 py-2 bg-indigo-50 border border-indigo-100 rounded-2xl flex items-center gap-2">
+        <span class="w-1.5 h-1.5 rounded-full bg-indigo-600 animate-pulse"></span>
+        <span class="text-[10px] font-bold text-indigo-600 uppercase tracking-widest">Platform Tasks</span>
     </div>
 </div>
-<div class="container-fluid">
-    <div class="modal fade" id="createTaskModal" tabindex="-1" aria-labelledby="createTaskModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="createTaskModalLabel">Buat Tugas Baru</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="createTaskForm" enctype="multipart/form-data">
-                        <input type="hidden" value="3" name="user_id">
 
-                        <div class="mb-3">
-                            <label for="taskTitle" class="form-label">Judul Tugas</label>
-                            <input type="text" class="form-control" id="taskTitle" name="title" placeholder="Masukkan judul tugas">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="taskDescription" class="form-label">Deskripsi Tugas</label>
-                            <textarea class="form-control" id="taskDescription" name="description" rows="3" placeholder="Masukkan deskripsi tugas"></textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="taskDueDate" class="form-label">Tanggal Deadline</label>
-                            <input type="date" class="form-control" id="taskDueDate" name="due_date">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="taskFile" class="form-label">File Lampiran</label>
-                            <input type="file" class="form-control" id="taskFile" name="file">
-                        </div>
-
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Buat</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+<div class="bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm" data-aos="fade-up">
+    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <h3 class="font-extrabold text-slate-900 text-sm">Semua Daftar Tugas</h3>
+        <span id="task-count" class="text-xs text-slate-400 font-semibold">0 tugas</span>
     </div>
 
-    <div class="modal fade" id="editTaskModal" tabindex="-1" aria-labelledby="editTaskModalLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editTaskModalLabel">Edit Tugas</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form id="updateTaskForm" enctype="multipart/form-data">
-                        <input type="hidden" value="3" name="user_id">
-                        <input type="hidden" id="editTaskId" name="task_id">
-                        <input type="hidden" name="_method" value="PUT">
-
-                        <div class="mb-3">
-                            <label for="taskTitle" class="form-label">Judul Tugas</label>
-                            <input type="text" class="form-control" id="taskTitle" name="title" placeholder="Masukkan judul tugas">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="taskDescription" class="form-label">Deskripsi Tugas</label>
-                            <textarea class="form-control" id="taskDescription" name="description" rows="3" placeholder="Masukkan deskripsi tugas"></textarea>
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="taskDueDate" class="form-label">Tanggal Deadline</label>
-                            <input type="date" class="form-control" id="taskDueDate" name="due_date">
-                        </div>
-
-                        <div class="mb-3">
-                            <label for="taskFile" class="form-label">File Lampiran</label>
-                            <input type="file" class="form-control" id="taskFile" name="file">
-                        </div>
-
-                        <div class="d-flex justify-content-end">
-                            <button type="button" class="btn btn-secondary me-2" data-bs-dismiss="modal">Batal</button>
-                            <button type="submit" class="btn btn-primary">Update</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
+    {{-- Loader --}}
+    <div id="task-loader" class="py-20 flex flex-col items-center gap-3">
+        <div class="w-8 h-8 border-3 border-slate-100 border-t-indigo-650 rounded-full animate-spin"></div>
+        <p class="text-slate-400 text-xs font-bold uppercase tracking-widest animate-pulse">Sinkronisasi data tugas...</p>
     </div>
 
-    <div class="d-lg-flex d-block mb-3 pb-3 border-bottom" style="margin-top: 20px;"> <!-- Menambahkan margin-top -->
-        <div class="card-tabs mb-lg-0 mb-3 me-auto">
-            <a class="text-black fs-3">Semua Tugas</a>
+    {{-- Empty state --}}
+    <div id="task-empty" class="hidden py-16 text-center">
+        <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center mx-auto mb-4 text-slate-400">
+            <i data-feather="clipboard" class="w-6 h-6"></i>
         </div>
-        <div>
-            <button type="button" class="btn btn-primary rounded" data-bs-toggle="modal" data-bs-target="#createTaskModal">
-                Buat Tugas Baru
-            </button>
-        </div>
+        <h4 class="font-bold text-slate-800 text-sm">Belum Ada Tugas Kuliah</h4>
+        <p class="text-slate-400 text-xs mt-1">Belum ada tugas kuliah yang diterbitkan oleh dosen pengajar.</p>
     </div>
 
-    <div class="row">
-        <div class="col-lg-12">
-            <div class="mb-3">
-                <label for="filterTask" class="form-label text-black font-w500">Filter Berdasarkan Tugas:</label>
-                <select id="filterTask" class="form-select">
-                    <option value="all">Semua Tugas</option>
-                    <option value="taskA">Tugas A</option>
-                    <option value="taskB">Tugas B</option>
-                    <option value="taskC">Tugas C</option>
-                </select>
-            </div>
+    <div class="overflow-x-auto">
+        <table class="w-full text-left text-xs">
+            <thead class="bg-slate-50 border-b border-slate-100 text-slate-400 font-bold uppercase tracking-wider hidden" id="task-table-header">
+                <tr>
+                    <th class="px-6 py-4 w-16 text-center">No</th>
+                    <th class="px-6 py-4">Judul Tugas</th>
+                    <th class="px-6 py-4">Materi Terkait</th>
+                    <th class="px-6 py-4">Batas Pengumpulan</th>
+                    <th class="px-6 py-4 text-right px-8">Tindakan</th>
+                </tr>
+            </thead>
+            <tbody id="task-list-body" class="divide-y divide-slate-50 text-slate-700 font-semibold"></tbody>
+        </table>
+    </div>
+</div>
+@endsection
 
-            <div class="table-responsive" style="overflow-x: auto;">
-                <table class="table table-hover table-bordered text-nowrap" style="white-space: nowrap; table-layout: auto; width: 100%; background-color: white;">
-                    <thead>
-                        <tr>
-                            <th style="padding: 15px;">No</th>
-                            <th style="padding: 15px;">Nama Materi</th>
-                            <th style="padding: 15px;">Judul Tugas</th>
-                            <th style="padding: 15px;">Tanggal Deadline</th>
-                            <th style="padding: 15px;">Lampiran</th>
-                            <th style="padding: 15px;">Status</th>
-                            <th style="padding: 15px;" class="text-center">Action</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td style="padding: 15px;">1</td>
-                            <td style="padding: 15px;">Tugas Matematika</td>
-                            <td style="padding: 15px;">Tugas Matematika</td>
-                            <td style="padding: 15px;">2024-12-15</td>
-                            <td style="padding: 15px;"><a href="#">Download File</a></td>
-                            <td style="padding: 15px;"><span class="badge bg-success">Aktif</span></td>
-                            <td style="padding: 15px;" class="text-center">
-                                <a href="{{ route('admin.detailTask') }}" class="btn btn-info btn-sm">Detail</a>
-                                <button class="btn btn-warning btn-sm" data-bs-toggle="modal" data-bs-target="#editTaskModal">Edit</button>
-                                <button class="btn btn-danger btn-sm">Hapus</button>
+@section('script')
+<script>
+    $(document).ready(function() {
+        loadTasks();
+    });
+
+    function loadTasks() {
+        $('#task-loader').show();
+        $('#task-table-header').addClass('hidden');
+        $('#task-empty').addClass('hidden');
+        $('#task-list-body').empty();
+
+        $.ajax({
+            url: '/api/admin/tasks/data',
+            method: 'GET',
+            success: function(res) {
+                $('#task-loader').hide();
+                const list = res.data || [];
+                $('#task-count').text(`${list.length} tugas`);
+
+                if (list.length === 0) {
+                    $('#task-empty').removeClass('hidden');
+                    feather.replace();
+                    return;
+                }
+
+                $('#task-table-header').removeClass('hidden');
+                
+                list.forEach((t, index) => {
+                    const deadlineDate = t.deadline ? new Date(t.deadline).toLocaleDateString('id-ID', {day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'}) + ' WIB' : '—';
+
+                    $('#task-list-body').append(`
+                        <tr id="task-row-${t.id}">
+                            <td class="px-6 py-4 text-center text-slate-400 font-bold">${index + 1}</td>
+                            <td class="px-6 py-4">
+                                <div class="font-extrabold text-slate-900 text-xs">${t.name}</div>
+                                <div class="text-slate-400 text-[10px] font-semibold mt-0.5 max-w-[320px] truncate">${t.description || 'Tidak ada instruksi detail.'}</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <span class="px-2 py-1 bg-indigo-50 border border-indigo-100 text-indigo-650 rounded-lg font-bold">${t.course_name}</span>
+                            </td>
+                            <td class="px-6 py-4 text-slate-550 font-semibold">${deadlineDate}</td>
+                            <td class="px-6 py-4 text-right px-8">
+                                <a href="/admin/detailTask/${t.id}" class="px-3.5 py-1.5 bg-slate-900 hover:bg-indigo-650 text-white rounded-lg text-[10px] font-bold transition-all inline-block shadow-sm">
+                                    Inspeksi Tugas
+                                </a>
                             </td>
                         </tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-</div>
+                    `);
+                });
+                feather.replace();
+            },
+            error: () => {
+                $('#task-loader').hide();
+                $('#task-empty').removeClass('hidden');
+                feather.replace();
+            }
+        });
+    }
+</script>
 @endsection

@@ -89,4 +89,13 @@ class UserController extends Controller
             'data' => $user
         ], 200);
     }
+
+    public function studentAll()
+    {
+        $users = User::where('role', 'student')->get();
+        return response()->json([
+            'status' => 'success',
+            'data' => $users
+        ], 200);
+    }
 }

@@ -1,57 +1,105 @@
 @extends('layouts.student.app')
 
-@section('page_title', 'Dashboard Overview')
+@section('title', 'Dashboard Mahasiswa — Portal Mahasiswa')
+@section('page_title', 'Ringkasan Aktivitas')
+
+@section('style')
+<style>
+    .kpi-card { border-radius: 1.5rem; border: 1px solid #e2e8f0; background: white; }
+    .course-card { transition: transform 0.2s ease, box-shadow 0.2s ease; border-radius: 1.5rem; border: 1px solid #e2e8f0; background: white; display: flex; flex-direction: column; }
+    .course-card:hover { transform: translateY(-4px); border-color: #cbd5e1; box-shadow: 0 10px 20px -10px rgba(0,0,0,0.05); }
+    .image-container { aspect-ratio: 16/10; overflow: hidden; border-radius: 1rem; position: relative; border: 1px solid #f1f5f9; }
+</style>
+@endsection
 
 @section('content')
-<div class="mb-10 bg-slate-900 rounded-[2.5rem] p-8 md:p-12 text-white relative overflow-hidden shadow-2xl shadow-indigo-100" data-aos="fade-up">
-    <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-600/20 blur-[80px] rounded-full -mr-20 -mt-20"></div>
-    <div class="absolute bottom-0 left-0 w-48 h-48 bg-cyan-500/10 blur-[60px] rounded-full -ml-10 -mb-10"></div>
-
-    <div class="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+<div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm animate-fade-in">
+    <div>
+        <div class="inline-flex items-center gap-2 px-2.5 py-1 rounded-lg bg-yellow-50 border border-yellow-100 text-yellow-650 font-bold text-[10px] uppercase tracking-widest mb-3">
+            <span class="w-1.5 h-1.5 rounded-full bg-yellow-500 animate-pulse"></span>
+            Status: Mahasiswa Aktif
+        </div>
+        <h2 class="text-2xl font-extrabold text-slate-900 tracking-tight leading-tight">
+            Selamat Datang, <span class="text-yellow-600">{{ auth()->user()->name }}</span> 👋
+        </h2>
+        <p class="text-slate-500 text-xs font-semibold mt-1">Pantau perkembangan kurikulum, statistik tugas, dan jadwal kuliah Anda.</p>
+    </div>
+    
+    <div class="flex items-center gap-4 bg-slate-50 border border-slate-200 p-4 rounded-2xl min-w-[220px] shrink-0 shadow-sm">
+        <div class="w-10 h-10 bg-yellow-500 text-slate-950 rounded-xl flex items-center justify-center shrink-0 shadow-sm">
+            <i data-feather="book" class="w-5 h-5"></i>
+        </div>
         <div>
-            <div class="inline-flex items-center gap-2 px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-indigo-300 font-bold text-[10px] uppercase tracking-widest mb-4">
-                <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
-                Status: Aktif
-            </div>
-            <h2 class="text-3xl md:text-4xl font-extrabold tracking-tight leading-tight">
-                Selamat Datang, <br class="md:hidden"> 
-                <span class="text-indigo-400">{{ auth()->user()->name }}</span> 👋
-            </h2>
-            <p class="mt-3 text-slate-400 font-medium max-w-md leading-relaxed">
-                Lanjutkan perjalanan belajarmu di ACESSA. Selesaikan setiap modul untuk memperkuat portofolio teknismu.
-            </p>
-        </div>
-
-        <div class="flex items-center gap-5 bg-white/5 border border-white/10 p-6 rounded-[2rem] backdrop-blur-md min-w-[200px]">
-            <div class="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center shadow-xl shadow-indigo-500/20">
-                <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            </div>
-            <div>
-                <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-500">Kelas Diikuti</p>
-                <p class="text-3xl font-black mt-1"><span id="count">0</span></p>
-            </div>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none">Kelas Diikuti</p>
+            <p class="text-xl font-black text-slate-800 mt-1"><span id="count">0</span></p>
         </div>
     </div>
 </div>
 
-<div id="courses-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
-    <div id="loading-state" class="col-span-full py-32 flex flex-col items-center justify-center text-center">
-        <div class="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
-        <p class="text-slate-400 font-black text-[10px] uppercase tracking-widest animate-pulse">Menghubungkan ke Server...</p>
-    </div>
-</div>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+    {{-- Left: Classrooms List --}}
+    <div class="lg:col-span-8 flex flex-col gap-5">
+        <div class="flex items-center gap-2 px-2">
+            <span class="w-2 h-2 rounded-full bg-yellow-500"></span>
+            <h4 class="text-xs font-black text-slate-900 uppercase tracking-widest">Daftar Kelas Saya</h4>
+        </div>
 
-<div id="no-data" class="hidden py-32 flex-col items-center justify-center text-center bg-white border-2 border-dashed border-slate-200 rounded-[3rem]" data-aos="zoom-in">
-    <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6 text-slate-300">
-        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.247 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+        <div id="loading-state" class="py-24 flex flex-col items-center justify-center bg-white border border-slate-200 rounded-3xl">
+            <div class="w-8 h-8 border-3 border-slate-100 border-t-yellow-500 rounded-full animate-spin mb-3"></div>
+            <p class="text-slate-400 font-bold text-[10px] uppercase tracking-widest animate-pulse">Menghubungkan data kelas...</p>
+        </div>
+
+        <div id="no-data" class="hidden py-24 flex-col items-center justify-center text-center bg-white border border-dashed border-slate-200 rounded-3xl">
+            <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center mb-4 text-slate-400">
+                <i data-feather="folder-open" class="w-6 h-6"></i>
+            </div>
+            <h3 class="font-bold text-slate-800 text-sm">Belum Bergabung Kelas</h3>
+            <p class="mt-1 text-slate-400 text-xs">Anda belum terdaftar dalam kelas pengajaran apa pun saat ini.</p>
+            <a href="/student/classroom" class="mt-6 px-5 py-2.5 bg-slate-900 hover:bg-yellow-500 hover:text-slate-950 text-white font-bold text-xs rounded-xl transition-all shadow-sm">Katalog Kelas</a>
+        </div>
+
+        <div id="courses-container" class="grid grid-cols-1 md:grid-cols-2 gap-6 pb-20 hidden"></div>
     </div>
-    <h3 class="text-xl font-black text-slate-900 tracking-tight">Belum Ada Kelas</h3>
-    <p class="mt-2 text-slate-500 font-medium max-w-xs mx-auto text-sm">Anda belum bergabung dalam kelas manapun.</p>
-    <a href="/student/classroom" class="mt-8 px-8 py-3 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest rounded-xl hover:bg-indigo-600 transition-all shadow-lg">Eksplorasi Katalog</a>
+
+    {{-- Right: Weekly Learning Graphic & Stats --}}
+    <div class="lg:col-span-4 flex flex-col gap-6" data-aos="fade-up" data-aos-delay="100">
+        <div class="bg-white border border-slate-200 rounded-3xl p-5 shadow-sm">
+            <div class="flex items-center justify-between mb-4 pb-3 border-b border-slate-100">
+                <h3 class="text-xs font-black uppercase text-slate-900 tracking-wider">Aktivitas Belajar Mingguan</h3>
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+            </div>
+            
+            <div class="relative w-full h-[200px]">
+                <canvas id="weeklyActivityChart"></canvas>
+            </div>
+
+            <div class="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-4">
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/50">
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Rata-rata Harian</p>
+                    <p class="text-sm font-black text-slate-800">45 Menit</p>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200/50">
+                    <p class="text-[8px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">Status Keaktifan</p>
+                    <p class="text-sm font-black text-emerald-600">Sangat Baik</p>
+                </div>
+            </div>
+        </div>
+
+        {{-- Academic Shortcuts Card --}}
+        <div class="bg-slate-900 text-white rounded-3xl p-6 relative overflow-hidden shadow-sm">
+            <p class="text-[8px] font-bold text-yellow-500 uppercase tracking-widest mb-1.5">Info Akademik</p>
+            <h4 class="text-base font-extrabold tracking-tight">Kartu Hasil Studi (KHS)</h4>
+            <p class="text-slate-400 text-xs font-semibold mt-1 leading-relaxed">Lihat nilai semester berjalan &amp; IPS Anda di KHS Portal.</p>
+            <a href="/student/khs" class="mt-6 px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-slate-950 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all shadow-sm active:scale-[0.98]">
+                Buka KHS Portal <i data-feather="arrow-right" class="w-4 h-4"></i>
+            </a>
+        </div>
+    </div>
 </div>
 @endsection
 
 @section('script')
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     function loadClassroomData(userId) {
         $.ajax({
@@ -60,7 +108,7 @@
             success: function(response) {
                 $('#loading-state').remove();
                 const container = $('#courses-container');
-                container.find('.course-item').remove();
+                container.empty();
 
                 if (response.status === "success" && response.StudentClassroomRelations.length === 0) {
                     $('#no-data').removeClass('hidden').addClass('flex');
@@ -73,42 +121,43 @@
                         const course = relation.course;
                         const user = relation.user;
 
-                        const courseThumbnail = course.thumbnail ? `/storage/${course.thumbnail}` : '/assets/user.png';
+                        const courseThumbnail = course.thumbnail ? `/storage/${course.thumbnail}` : '/user.png';
                         const authorImage = user.profile ? `/storage/${user.profile}` : '/user.png';
-                        const desc = course.description.length > 80 ? course.description.substring(0, 80) + '...' : course.description;
+                        const desc = course.description.length > 60 ? course.description.substring(0, 60) + '...' : course.description;
 
                         const html = `
-                            <div class="course-item group bg-white border border-slate-200 rounded-[2rem] overflow-hidden flex flex-col h-full hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500 hover:-translate-y-1">
-                                <div class="relative aspect-[16/10] overflow-hidden bg-slate-100">
-                                    <img src="${courseThumbnail}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
-                                    <div class="absolute top-4 left-4">
-                                        <span class="px-3 py-1 bg-white/90 backdrop-blur text-indigo-600 font-black text-[9px] uppercase tracking-widest rounded-lg shadow-sm">ACESSA</span>
+                            <div class="course-card group text-left">
+                                <div class="image-container relative mb-4">
+                                    <img src="${courseThumbnail}" class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300" onerror="this.onerror=null; this.src='/user.png';">
+                                    <div class="absolute top-3 left-3">
+                                        <span class="px-2.5 py-1 bg-white border border-slate-200 text-yellow-650 font-bold text-[8px] uppercase tracking-wider rounded-lg shadow-sm">
+                                            ${course.statusClass || 'Aktif'}
+                                        </span>
                                     </div>
                                 </div>
-                                <div class="p-6 flex flex-col flex-grow">
-                                    <h5 class="text-lg font-extrabold text-slate-900 leading-tight line-clamp-2 group-hover:text-indigo-600 transition-colors">${course.name}</h5>
-                                    <p class="mt-3 text-slate-500 text-sm font-medium leading-relaxed line-clamp-2">${desc}</p>
-                                    <div class="mt-auto pt-6">
-                                        <div class="flex items-center justify-between mb-6">
-                                            <div class="flex items-center gap-2">
-                                                <img src="${authorImage}" class="w-7 h-7 rounded-full border border-slate-100 object-cover">
-                                                <span class="text-xs font-bold text-slate-700">${course.teacher}</span>
+                                <div class="px-5 pb-5 flex flex-col flex-grow">
+                                    <h5 class="text-xs font-extrabold text-slate-900 leading-snug line-clamp-1 group-hover:text-yellow-600 transition-colors">${course.name}</h5>
+                                    <p class="mt-2 text-slate-500 text-[11px] font-semibold leading-relaxed line-clamp-2">${desc}</p>
+                                    <div class="mt-auto pt-4 border-t border-slate-100 mt-4">
+                                        <div class="flex items-center justify-between mb-4">
+                                            <div class="flex items-center gap-1.5">
+                                                <img src="${authorImage}" class="w-4 h-4 rounded-md border border-slate-100 object-cover" onerror="this.onerror=null; this.src='/user.png';">
+                                                <span class="text-[9px] font-bold text-slate-550 truncate max-w-[100px]">${course.teacher}</span>
                                             </div>
-                                            <div class="flex items-center gap-1.5 text-slate-400">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                                                <span class="text-[10px] font-bold">${course.total_user}</span>
+                                            <div class="flex items-center gap-1 text-slate-400">
+                                                <i data-feather="users" class="w-3 h-3"></i>
+                                                <span class="text-[9px] font-extrabold text-slate-700">${course.total_user}</span>
                                             </div>
                                         </div>
-                                        <a href="/student/classroom/course/${course.id}" class="flex items-center justify-center gap-2 w-full py-4 bg-slate-900 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl hover:bg-indigo-600 shadow-lg hover:shadow-indigo-500/30 transition-all duration-300">
-                                            Masuk Kelas
-                                            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                        <a href="/student/classroom/course/${course.id}" class="w-full py-2 bg-slate-900 hover:bg-yellow-500 hover:text-slate-950 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]">
+                                            Masuk Kelas <i data-feather="arrow-right" class="w-4.5 h-4.5"></i>
                                         </a>
                                     </div>
                                 </div>
                             </div>`;
                         container.append(html);
                     });
+                    feather.replace();
                 }
             }
         });
@@ -124,10 +173,47 @@
         });
     }
 
+    function initWeeklyChart() {
+        const ctx = document.getElementById('weeklyActivityChart').getContext('2d');
+        new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min'],
+                datasets: [{
+                    label: 'Waktu Belajar (Menit)',
+                    data: [35, 60, 45, 90, 30, 15, 40],
+                    backgroundColor: '#eab308', /* tailwind yellow-500 */
+                    borderColor: '#d97706',
+                    borderWidth: 1,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#f1f5f9' },
+                        ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 9, weight: 'bold' } }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#64748b', font: { family: 'Plus Jakarta Sans', size: 9, weight: 'bold' } }
+                    }
+                }
+            }
+        });
+    }
+
     $(document).ready(function() {
         const userId = {{ auth()->user()->id }};
         loadClassroomData(userId);
         fetchCount(userId);
+        initWeeklyChart();
     });
 </script>
 @endsection

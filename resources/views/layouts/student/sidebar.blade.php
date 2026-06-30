@@ -1,40 +1,88 @@
-<aside class="w-72 bg-white border-r border-slate-200 flex flex-col hidden lg:flex h-full shrink-0">
-    <div class="p-8 flex justify-center shrink-0">
-        <a href="/">
-            <img src="{{ asset('logo.png') }}" alt="Logo" class="h-12 w-auto">
+<aside class="fixed top-0 left-0 h-screen w-64 bg-slate-900 text-slate-350 flex flex-col z-[1000] border-r border-slate-800 transition-transform duration-300 transform lg:translate-x-0 -translate-x-full">
+    {{-- Brand Logo (Yellow/Gold Campus Theme) --}}
+    <div class="px-6 py-6 flex items-center gap-3 flex-shrink-0 border-b border-slate-800">
+        <a href="/student/dashboard" class="flex items-center gap-2.5 group">
+            <div class="w-9 h-9 bg-yellow-500 text-slate-950 rounded-lg flex items-center justify-center font-black text-lg shadow-md shadow-yellow-500/20">
+                A
+            </div>
+            <div>
+                <span class="font-extrabold text-[15px] text-white tracking-tight">ACESSA</span>
+                <div class="text-[9px] text-yellow-500 font-black uppercase tracking-widest leading-none">Portal Mahasiswa</div>
+            </div>
         </a>
     </div>
 
-    <nav class="flex-1 px-4 space-y-2 mt-4 overflow-y-auto">
-        <p class="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Menu Utama</p>
-        
-        <a href="/student/dashboard" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm transition-all duration-200 {{ request()->is('student/dashboard') ? 'sidebar-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path></svg>
-            Dashboard
-        </a>
+    {{-- Navigation Menu --}}
+    <nav class="flex-1 px-4 py-6 space-y-5 overflow-y-auto scrollbar-thin">
+        <div>
+            <p class="px-3 pb-2 text-[9px] font-black text-yellow-500 uppercase tracking-[0.18em]">Kontrol Utama</p>
+            <div class="space-y-1">
+                <a href="/student/dashboard" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold text-[11px] transition-all duration-150 {{ request()->is('student/dashboard') ? 'bg-yellow-500 text-slate-950 shadow-md shadow-yellow-500/10' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                    <i data-feather="home" class="w-4 h-4"></i>
+                    <span>Dashboard</span>
+                </a>
+                <a href="/student/classroom" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold text-[11px] transition-all duration-150 {{ request()->is('student/classroom*') ? 'bg-yellow-500 text-slate-950 shadow-md shadow-yellow-500/10' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                    <i data-feather="book-open" class="w-4 h-4"></i>
+                    <span>Katalog Kelas</span>
+                </a>
+            </div>
+        </div>
 
-        <a href="/student/classroom" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm transition-all duration-200 {{ request()->is('student/classroom*') ? 'sidebar-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
-            Katalog Kelas
-        </a>
+        <div>
+            <p class="px-3 pb-2 text-[9px] font-black text-yellow-500 uppercase tracking-[0.18em]">Akademik &amp; Registrasi</p>
+            <div class="space-y-1">
+                <a href="{{ route('join.classroom') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold text-[11px] transition-all duration-150 {{ request()->routeIs('join.classroom') ? 'bg-yellow-500 text-slate-950 shadow-md shadow-yellow-500/10' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                    <i data-feather="plus-circle" class="w-4 h-4"></i>
+                    <span>Bergabung Kelas</span>
+                </a>
+                <a href="{{ route('student.khs') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold text-[11px] transition-all duration-150 {{ request()->routeIs('student.khs') ? 'bg-yellow-500 text-slate-950 shadow-md shadow-yellow-500/10' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                    <i data-feather="file-text" class="w-4 h-4"></i>
+                    <span>KHS / Nilai Akademik</span>
+                </a>
+            </div>
+        </div>
 
-        <a href="{{ route('join.classroom') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm transition-all duration-200 {{ request()->routeIs('join.classroom') ? 'sidebar-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v3m0 0v3m0-3h3m-3 0H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-            Bergabung Kelas
-        </a>
+        <div>
+            <p class="px-3 pb-2 text-[9px] font-black text-yellow-500 uppercase tracking-[0.18em]">Tugas &amp; Diskusi</p>
+            <div class="space-y-1">
+                <a href="/student/taskColection" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold text-[11px] transition-all duration-150 {{ request()->is('student/taskColection*') ? 'bg-yellow-500 text-slate-950 shadow-md shadow-yellow-500/10' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                    <i data-feather="clipboard" class="w-4 h-4"></i>
+                    <span>Daftar Tugas Saya</span>
+                </a>
+                <a href="/student/diskusi" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold text-[11px] transition-all duration-150 {{ request()->is('student/diskusi*') ? 'bg-yellow-500 text-slate-950 shadow-md shadow-yellow-500/10' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                    <i data-feather="message-square" class="w-4 h-4"></i>
+                    <span>Forum Diskusi Global</span>
+                </a>
+            </div>
+        </div>
 
-        <a href="{{ route('student.khs') }}" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm transition-all duration-200 {{ request()->routeIs('student.khs') ? 'sidebar-active' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900' }}">
-            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
-            KHS / Nilai Akademik
-        </a>
-
-        <div class="pt-10 shrink-0">
-            <p class="px-4 text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Sistem</p>
-            <form id="logoutForm" action="{{ route('logout') }}" method="POST" class="hidden">@csrf</form>
-            <a href="#" onclick="event.preventDefault(); document.getElementById('logoutForm').submit();" class="flex items-center gap-3 px-4 py-3.5 rounded-xl font-bold text-sm text-red-500 hover:bg-red-50 transition-all duration-200">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
-                Keluar
-            </a>
+        <div>
+            <p class="px-3 pb-2 text-[9px] font-black text-yellow-500 uppercase tracking-[0.18em]">Sesi Virtual</p>
+            <div class="space-y-1">
+                <a href="/zoom-session" class="flex items-center gap-3 px-3 py-2.5 rounded-xl font-bold text-[11px] transition-all duration-150 {{ request()->is('zoom-session*') ? 'bg-yellow-500 text-slate-950 shadow-md shadow-yellow-500/10' : 'text-slate-400 hover:bg-white/5 hover:text-white' }}">
+                    <i data-feather="video" class="w-4 h-4"></i>
+                    <span>Jadwal Zoom Sesi</span>
+                </a>
+            </div>
         </div>
     </nav>
+
+    {{-- Student profile info card --}}
+    <div class="p-4 bg-slate-950 flex-shrink-0 border-t border-slate-800">
+        <div class="flex items-center gap-3 p-3 bg-slate-900 rounded-xl border border-slate-800 mb-3 shadow-sm">
+            <div class="w-9 h-9 bg-yellow-500 text-slate-950 rounded-lg flex items-center justify-center font-extrabold text-sm flex-shrink-0">
+                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+            </div>
+            <div class="overflow-hidden flex-grow text-left">
+                <p class="text-[12px] font-bold text-white leading-tight truncate">{{ auth()->user()->name }}</p>
+                <p class="text-[8px] font-bold text-slate-500 uppercase tracking-widest mt-0.5">Mahasiswa Aktif</p>
+            </div>
+        </div>
+
+        <form id="logoutForm" action="{{ route('logout') }}" method="POST" class="hidden">@csrf</form>
+        <button onclick="document.getElementById('logoutForm').submit();" class="flex items-center justify-center gap-2.5 w-full py-3 bg-red-500/10 hover:bg-red-650 text-red-400 hover:text-white border border-red-500/20 hover:border-red-600 rounded-lg font-bold text-[10px] uppercase tracking-widest transition-all active:scale-[0.98]">
+            <i data-feather="log-out" class="w-3.5 h-3.5"></i>
+            Keluar Panel
+        </button>
+    </div>
 </aside>

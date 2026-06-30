@@ -1,84 +1,100 @@
 @extends('layouts.student.app')
 
+@section('title', 'Detail Kelas — Portal Mahasiswa')
 @section('page_title', 'Detail Kelas')
 
 @section('style')
 <style>
-    .nav-tab-active { border-bottom: 3px solid #4f46e5; color: #4f46e5; font-weight: 800; }
-    .chat-container { height: calc(100vh - 450px); min-height: 500px; }
-    .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-blur: 12px; border: 1px solid rgba(241, 245, 249, 1); }
-    .curriculum-item:hover { background-color: #f8fafc; transform: translateX(8px); }
+    .tab-btn { position: relative; transition: all 0.2s ease; }
+    .tab-btn.active { color: #4f46e5; border-bottom: 2px solid #4f46e5; }
+    .chat-container { height: 500px; scrollbar-width: thin; }
+    .msg-bubble { max-width: 85%; }
+    .msg-left .bubble-content { background: #f1f5f9; color: #1e293b; border-radius: 1rem 1rem 1rem 0; }
+    .msg-right .bubble-content { background: #4f46e5; color: white; border-radius: 1rem 1rem 0 1rem; }
+    .banner-overlay { background: rgba(15, 23, 42, 0.7); }
 </style>
 @endsection
 
 @section('content')
-<div class="mb-8 overflow-hidden rounded-[2.5rem] bg-white shadow-sm border border-slate-100" data-aos="fade-up">
-    <div class="relative h-64 md:h-80 w-full overflow-hidden">
-        <img id="class-thumbnail" class="h-full w-full object-cover" alt="Thumbnail">
-        <div class="absolute inset-0 bg-gradient-to-t from-slate-900/80 via-slate-900/20 to-transparent"></div>
-        <div class="absolute bottom-8 left-8 right-8">
-            <div class="flex items-center gap-3 mb-4">
-                <span class="px-3 py-1 bg-indigo-600 text-white font-black text-[9px] uppercase tracking-widest rounded-lg">Course Detail</span>
-                <span class="w-1.5 h-1.5 rounded-full bg-white/40"></span>
-                <p id="nameTeacher-top" class="text-white/80 text-xs font-bold uppercase tracking-wider"></p>
-            </div>
-            <h2 id="title" class="text-3xl md:text-4xl font-black text-white tracking-tight leading-tight"></h2>
-        </div>
-    </div>
-</div>
-
-<div class="mb-10 flex border-b border-slate-200 overflow-x-auto no-scrollbar gap-8">
-    <button onclick="switchTab('detail')" id="tab-detail" class="pb-4 text-sm font-bold text-slate-400 hover:text-indigo-600 transition-all whitespace-nowrap nav-tab-active">Informasi Umum</button>
-    <button onclick="switchTab('materi')" id="tab-materi" class="pb-4 text-sm font-bold text-slate-400 hover:text-indigo-600 transition-all whitespace-nowrap">Kurikulum Materi</button>
-    <button onclick="switchTab('siswa')" id="tab-siswa" class="pb-4 text-sm font-bold text-slate-400 hover:text-indigo-600 transition-all whitespace-nowrap">Teman Sekelas</button>
-    <button onclick="switchTab('forum')" id="tab-forum" class="pb-4 text-sm font-bold text-slate-400 hover:text-indigo-600 transition-all whitespace-nowrap">Forum Diskusi</button>
-</div>
-
-<div id="content-detail" class="tab-content block animate-fade-in">
-    <div class="bg-white p-8 md:p-12 rounded-[2.5rem] border border-slate-100 shadow-sm">
-        <h3 class="text-xl font-black text-slate-900 mb-6 flex items-center gap-3">
-            <span class="w-1.5 h-6 bg-indigo-600 rounded-full"></span>
-            Tentang Kelas Ini
-        </h3>
-        <p id="description_classroom" class="text-slate-600 leading-relaxed text-lg font-medium"></p>
-        
-        <div class="mt-12 flex items-center gap-4 p-6 bg-slate-50 rounded-3xl border border-slate-100">
-            <img id="profile" class="w-14 h-14 rounded-2xl object-cover shadow-md" alt="Mentor">
+<div class="flex flex-col gap-6">
+    
+    {{-- Header Banner (Flat Overlay, No Gradients) --}}
+    <div class="relative h-[240px] rounded-3xl overflow-hidden shadow-sm border border-slate-200" data-aos="fade-down">
+        <img id="class-thumbnail" class="w-full h-full object-cover" src="" onerror="this.onerror=null; this.src='/user.png';">
+        <div class="absolute inset-0 banner-overlay"></div>
+        <div class="absolute bottom-6 left-6 right-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
-                <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.15em]">Instruktur Kelas</p>
-                <p id="nameTeacher" class="text-slate-900 font-extrabold text-lg"></p>
+                <span class="px-2.5 py-1 bg-white border border-slate-200 text-indigo-650 font-bold text-[9px] uppercase tracking-wider rounded-lg mb-2 inline-block shadow-sm">Portal Kelas</span>
+                <h2 id="title" class="text-2xl md:text-3xl font-extrabold text-white tracking-tight leading-tight truncate"></h2>
+                <div class="flex items-center gap-2.5 mt-2">
+                    <p class="text-slate-300 font-semibold text-xs truncate">Dosen Pengampu: <span id="nameTeacher-top" class="text-white font-extrabold"></span></p>
+                </div>
+            </div>
+            <div class="shrink-0">
+                <a href="/student/dashboard" class="px-4 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-850 font-bold text-xs rounded-xl shadow-sm transition-all active:scale-[0.98]">
+                    Kembali ke Dashboard
+                </a>
             </div>
         </div>
     </div>
-</div>
 
-<div id="content-materi" class="tab-content hidden">
-    <div class="space-y-4" id="curriculum-list"></div>
-</div>
+    {{-- Tabs Menu --}}
+    <div class="bg-white border border-slate-200 rounded-2xl p-2 flex items-center gap-2 overflow-x-auto" data-aos="fade-up">
+        <button onclick="switchTab('detail')" id="tab-detail" class="tab-btn active px-5 py-2.5 font-bold text-xs text-slate-500 hover:text-slate-800 rounded-lg transition-all">Ringkasan</button>
+        <button onclick="switchTab('materi')" id="tab-materi" class="tab-btn px-5 py-2.5 font-bold text-xs text-slate-500 hover:text-slate-800 rounded-lg transition-all">Materi Kurikulum</button>
+        <button onclick="switchTab('siswa')" id="tab-siswa" class="tab-btn px-5 py-2.5 font-bold text-xs text-slate-500 hover:text-slate-800 rounded-lg transition-all">Teman Sekelas</button>
+        <button onclick="switchTab('forum')" id="tab-forum" class="tab-btn px-5 py-2.5 font-bold text-xs text-slate-500 hover:text-slate-800 rounded-lg transition-all">Forum Diskusi</button>
+    </div>
 
-<div id="content-siswa" class="tab-content hidden">
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6" id="student-list"></div>
-</div>
-
-<div id="content-forum" class="tab-content hidden">
-    <div class="bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden flex flex-col shadow-2xl">
-        <div class="p-6 border-b border-slate-100 bg-slate-50/50 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <h4 class="font-black text-slate-900 text-sm uppercase tracking-widest">Public Discussion</h4>
+    {{-- Tab Contents --}}
+    <div id="main-content" data-aos="fade-up" data-aos-delay="50">
+        
+        {{-- Ringkasan --}}
+        <div id="content-detail" class="tab-content block space-y-6">
+            <div class="bg-white p-8 rounded-3xl border border-slate-200 shadow-sm text-left">
+                <h3 class="text-xs font-black uppercase text-indigo-650 tracking-wider mb-4">Informasi Ruang Kelas</h3>
+                <p id="description_classroom" class="text-sm text-slate-650 font-medium leading-relaxed italic"></p>
+                
+                <div class="mt-8 flex items-center gap-3 p-4 bg-slate-50 border border-slate-200/50 rounded-2xl max-w-sm">
+                    <img id="profile" class="w-10 h-10 rounded-lg object-cover border border-slate-200" src="/user.png" onerror="this.onerror=null; this.src='/user.png';">
+                    <div>
+                        <p class="text-[8px] font-bold text-slate-400 uppercase tracking-wider">Dosen Pengajar</p>
+                        <p id="nameTeacher" class="text-slate-900 font-extrabold text-xs"></p>
+                    </div>
+                </div>
             </div>
         </div>
-        
-        <div id="kotak-pesan" class="chat-container overflow-y-auto p-6 md:p-8 space-y-6 bg-[#fcfcfe]"></div>
 
-        <form id="form-pesan" class="p-6 bg-white border-t border-slate-100 flex items-center gap-4">
-            <input type="text" name="message" id="input-pesan" class="flex-1 px-6 py-4 bg-slate-50 border border-slate-100 rounded-2xl focus:outline-none focus:ring-4 focus:ring-indigo-500/10 focus:border-indigo-600 font-medium transition-all" placeholder="Tulis pesan diskusi di sini...">
-            <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
-            <input type="hidden" name="classroom_id" value="{{ $id }}">
-            <button type="submit" class="w-14 h-14 bg-indigo-600 text-white rounded-2xl flex items-center justify-center hover:bg-indigo-700 shadow-lg shadow-indigo-200 transition-all active:scale-95">
-                <svg class="w-6 h-6 transform rotate-90" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
-            </button>
-        </form>
+        {{-- Kurikulum --}}
+        <div id="content-materi" class="tab-content hidden">
+            <div class="space-y-4" id="curriculum-list"></div>
+        </div>
+
+        {{-- Teman Sekelas --}}
+        <div id="content-siswa" class="tab-content hidden">
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4" id="student-list"></div>
+        </div>
+
+        {{-- Forum Diskusi --}}
+        <div id="content-forum" class="tab-content hidden">
+            <div class="bg-white border border-slate-200 rounded-3xl overflow-hidden flex flex-col shadow-sm">
+                <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+                    <div class="flex items-center gap-2">
+                        <span class="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"></span>
+                        <span class="text-[10px] font-bold uppercase text-slate-600 tracking-wider">Aktivitas Forum Diskusi</span>
+                    </div>
+                </div>
+                <div id="kotak-pesan" class="chat-container overflow-y-auto p-6 space-y-4 bg-slate-50/30"></div>
+                <form id="form-pesan" class="p-4 bg-white border-t border-slate-200 flex items-center gap-3">
+                    <input type="text" name="message" id="input-pesan" class="flex-1 px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-indigo-600 transition-all" placeholder="Tulis pesan diskusi di sini...">
+                    <input type="hidden" name="user_id" value="{{ auth()->user()->id }}">
+                    <input type="hidden" name="classroom_id" value="{{ $id }}">
+                    <button type="submit" class="w-10 h-10 bg-indigo-650 text-white rounded-xl flex items-center justify-center hover:bg-indigo-700 transition-all active:scale-95 shrink-0">
+                        <i data-feather="send" class="w-4 h-4"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </div>
 @endsection
@@ -91,8 +107,9 @@
     function switchTab(tab) {
         $('.tab-content').addClass('hidden');
         $(`#content-${tab}`).removeClass('hidden');
-        $('.nav-item button, [id^="tab-"]').removeClass('nav-tab-active');
-        $(`#tab-${tab}`).addClass('nav-tab-active');
+        $('.tab-btn').removeClass('active');
+        $(`#tab-${tab}`).addClass('active');
+        if(tab === 'forum') scrollChatBottom();
     }
 
     const ambilDataKelas = () => {
@@ -124,19 +141,26 @@
                 if (res.status && res.data.length > 0) {
                     res.data.forEach((item, index) => {
                         list.append(`
-                            <a href="/student/course/detail/${item.id}" class="curriculum-item group block bg-white border border-slate-100 p-6 rounded-3xl transition-all duration-300 shadow-sm flex items-center justify-between">
-                                <div class="flex items-center gap-5">
-                                    <div class="w-12 h-12 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center font-black text-sm">${index + 1}</div>
-                                    <div>
-                                        <h5 class="text-slate-900 font-extrabold group-hover:text-indigo-600 transition-colors">${item.name}</h5>
-                                        <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest mt-1">Module Unit</p>
+                            <a href="/student/course/detail/${item.id}" class="curriculum-item group block bg-white border border-slate-200 p-4 rounded-xl transition-all shadow-sm flex items-center justify-between text-left hover:border-indigo-600">
+                                <div class="flex items-center gap-4 min-w-0">
+                                    <div class="w-9 h-9 bg-indigo-50 border border-indigo-100 text-indigo-650 rounded-lg flex items-center justify-center shrink-0 font-extrabold text-xs">${index + 1}</div>
+                                    <div class="min-w-0">
+                                        <h5 class="text-xs font-extrabold text-slate-900 truncate leading-snug group-hover:text-indigo-650 transition-colors">${item.name}</h5>
+                                        <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider mt-0.5">Materi Kuliah</p>
                                     </div>
                                 </div>
-                                <div class="w-10 h-10 rounded-xl bg-slate-50 flex items-center justify-center text-slate-300 group-hover:bg-indigo-600 group-hover:text-white transition-all">
-                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7"></path></svg>
+                                <div class="w-8 h-8 rounded-lg bg-slate-50 border border-slate-200 flex items-center justify-center text-slate-400 group-hover:bg-indigo-650 group-hover:border-indigo-650 group-hover:text-white transition-all shrink-0">
+                                    <i data-feather="chevron-right" class="w-4 h-4"></i>
                                 </div>
                             </a>`);
                     });
+                    feather.replace();
+                } else {
+                    list.html(`
+                        <div class="col-span-full py-16 text-center bg-white rounded-2xl border border-dashed border-slate-200">
+                            <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Belum ada kurikulum materi yang diunggah.</p>
+                        </div>
+                    `);
                 }
             }
         });
@@ -151,15 +175,22 @@
                 list.empty();
                 if (res.status && res.data.length > 0) {
                     res.data.forEach(s => {
+                        const img = s.profile ? `/storage/${s.profile}` : '/user.png';
                         list.append(`
-                            <div class="bg-white p-6 rounded-3xl border border-slate-100 flex items-center gap-4 shadow-sm">
-                                <img src="${s.profile ? '/storage/'+s.profile : '/user.png'}" class="w-12 h-12 rounded-full object-cover">
-                                <div class="overflow-hidden">
-                                    <p class="text-slate-900 font-bold truncate">${s.name}</p>
-                                    <p class="text-[10px] font-black text-slate-400 uppercase truncate">${s.email}</p>
+                            <div class="bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-3 shadow-sm min-w-0">
+                                <img src="${img}" class="w-10 h-10 rounded-lg object-cover border border-slate-100 shrink-0" onerror="this.onerror=null; this.src='/user.png';">
+                                <div class="overflow-hidden text-left">
+                                    <p class="text-xs font-extrabold text-slate-800 truncate leading-none mb-1">${s.name}</p>
+                                    <p class="text-[9px] font-bold text-slate-450 truncate">${s.email}</p>
                                 </div>
                             </div>`);
                     });
+                } else {
+                    list.html(`
+                        <div class="col-span-full py-16 flex flex-col items-center justify-center bg-white rounded-2xl border border-dashed border-slate-200 w-full">
+                            <p class="text-slate-400 font-bold uppercase tracking-wider text-[10px]">Belum ada teman sekelas terdaftar.</p>
+                        </div>
+                    `);
                 }
             }
         });
@@ -170,9 +201,13 @@
     const urlKirimPesan = `/api/forum/discussion`;
     let lastMessageId = 0;
 
+    const scrollChatBottom = () => {
+        const box = $('#kotak-pesan');
+        box.scrollTop(box.prop('scrollHeight'));
+    };
+
     function ambilPesan() {
         const box = $('#kotak-pesan');
-        const shouldScroll = box.scrollTop() + box.innerHeight() >= box[0].scrollHeight;
         $.ajax({
             url: `${urlAmbilPesan}?last_message_id=${lastMessageId}`,
             type: 'GET',
@@ -182,24 +217,24 @@
                         if ($(`[data-message-id="${msg.id}"]`).length) return;
                         const isMe = msg.user_id == userId;
                         const align = isMe ? 'flex-row-reverse' : 'flex-row';
-                        const bg = isMe ? 'bg-indigo-600 text-white rounded-br-none' : 'bg-slate-100 text-slate-900 rounded-bl-none';
+                        const bg = isMe ? 'bg-indigo-650 text-white rounded-br-none' : 'bg-slate-100 text-slate-900 rounded-bl-none';
                         const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
                         const img = msg.user_image ? `/storage/${msg.user_image}` : '/user.png';
 
                         box.append(`
-                            <div class="flex ${align} items-end gap-3 animate-fade-in" data-message-id="${msg.id}">
-                                <img src="${img}" class="w-8 h-8 rounded-full object-cover mb-1 shadow-sm">
-                                <div class="max-w-[75%]">
-                                    <div class="px-5 py-3 rounded-2xl ${bg} shadow-sm">
-                                        <p class="text-[10px] font-black opacity-60 uppercase tracking-widest mb-1">${isMe ? 'Anda' : msg.user_name}</p>
-                                        <p class="text-sm font-medium leading-relaxed">${msg.message}</p>
+                            <div class="flex ${align} items-end gap-3 text-left" data-message-id="${msg.id}">
+                                <img src="${img}" class="w-7 h-7 rounded-full object-cover mb-1 border border-slate-100 shadow-sm shrink-0" onerror="this.onerror=null; this.src='/user.png';">
+                                <div class="msg-bubble flex flex-col ${isMe ? 'items-end' : 'items-start'}">
+                                    <div class="px-4 py-2.5 rounded-xl ${bg} shadow-sm">
+                                        <p class="text-[8px] font-black opacity-60 uppercase tracking-widest mb-0.5">${isMe ? 'Anda' : msg.user_name}</p>
+                                        <p class="text-xs font-semibold leading-relaxed">${msg.message}</p>
                                     </div>
-                                    <p class="text-[9px] font-bold text-slate-400 mt-1 mx-2">${time}</p>
+                                    <span class="text-[8px] font-bold text-slate-400 mt-0.5 mx-2 uppercase">${time}</span>
                                 </div>
                             </div>`);
                         lastMessageId = msg.id;
                     });
-                    if (shouldScroll) box.scrollTop(box[0].scrollHeight);
+                    scrollChatBottom();
                 }
             }
         });

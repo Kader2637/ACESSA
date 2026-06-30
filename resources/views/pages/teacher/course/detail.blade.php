@@ -364,6 +364,17 @@
                                                 </select>
                                             </div>
                                             <div class="flex items-center gap-2">
+                                                <span class="text-[9px] font-black text-slate-500 uppercase">Terjemah Ke:</span>
+                                                <select id="subtitle-lang" class="bg-slate-800 border border-slate-700 text-xs rounded-xl px-3 py-1.5 font-bold focus:outline-none cursor-pointer">
+                                                    <option value="none">Tidak Diterjemahkan</option>
+                                                    <option value="id">Bahasa Indonesia</option>
+                                                    <option value="en">English</option>
+                                                    <option value="ja">日本語</option>
+                                                    <option value="ar">العربية</option>
+                                                    <option value="zh">中文</option>
+                                                </select>
+                                            </div>
+                                            <div class="flex items-center gap-2">
                                                 <span class="text-[9px] font-black text-slate-500 uppercase">Preview Ukuran:</span>
                                                 <select id="font-size" class="bg-slate-800 border border-slate-700 text-xs rounded-xl px-3 py-1.5 font-bold focus:outline-none cursor-pointer">
                                                     <option value="text-lg">Normal</option>
@@ -422,6 +433,8 @@
     let recognition = null;
     let isRecognizing = false;
     let captionTimeout = null;
+    let translationAbortController = null;
+    let translationTimeout = null;
 
     // Join Zoom Meeting SDK as Host
     $(document).on('click', '#btn-join-zoom', function() {
@@ -495,7 +508,7 @@
         
         recognition = new SpeechRecognition();
         recognition.continuous = true;
-        recognition.interimResults = false;
+        recognition.interimResults = true;
         recognition.lang = $('#spoken-lang').val();
         
         recognition.onstart = function() {
@@ -508,21 +521,65 @@
         };
         
         recognition.onresult = function(event) {
-            const resultIndex = event.resultIndex;
-            const transcript = event.results[resultIndex][0].transcript.trim();
+            let interimTranscript = '';
+            let finalTranscript = '';
             
-            if (transcript) {
-                // Post text transcript to server
+            for (let i = event.resultIndex; i < event.results.length; ++i) {
+                const transcriptText = event.results[i][0].transcript;
+                if (event.results[i].isFinal) {
+                    finalTranscript += transcriptText;
+                } else {
+                    interimTranscript += transcriptText;
+                }
+            }
+            
+            const liveText = (finalTranscript + interimTranscript).trim();
+            if (!liveText) return;
+
+            const spokenLang = $('#spoken-lang').val();
+            const targetLang = $('#subtitle-lang').val();
+            const srcLangShort = spokenLang.split('-')[0];
+
+            if (targetLang && targetLang !== 'none' && srcLangShort !== targetLang) {
+                // Debounce and fetch translation in real-time
+                if (translationTimeout) clearTimeout(translationTimeout);
+                if (translationAbortController) {
+                    translationAbortController.abort();
+                }
+                translationTimeout = setTimeout(() => {
+                    translationAbortController = new AbortController();
+                    const signal = translationAbortController.signal;
+                    const apiUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${srcLangShort}&tl=${targetLang}&dt=t&q=${encodeURIComponent(liveText)}`;
+
+                    fetch(apiUrl, { signal })
+                        .then(r => r.json())
+                        .then(transRes => {
+                            if (transRes && transRes[0]) {
+                                const translatedText = transRes[0].map(x => x ? x[0] : '').join('');
+                                renderSubtitleText('Saya', translatedText + ' <span class="text-xs text-indigo-400 font-bold uppercase">(Translated)</span>');
+                            }
+                        })
+                        .catch(err => {
+                            if (err.name !== 'AbortError') {
+                                console.error("Translation error:", err);
+                            }
+                        });
+                }, 50); // 50ms debounce for instant feedback
+            } else {
+                // If translation not active, just render the live text
+                renderSubtitleText('Saya', liveText);
+            }
+            
+            if (finalTranscript.trim()) {
+                const text = finalTranscript.trim();
+                // Post final text transcript to server
                 $.ajax({
                     url: '/api/live-captions',
                     method: 'POST',
                     data: {
                         course_id: courseId,
-                        text: transcript,
-                        language: $('#spoken-lang').val()
-                    },
-                    success: function() {
-                        renderSubtitleText('Saya', transcript);
+                        text: text,
+                        language: spokenLang
                     }
                 });
             }
@@ -705,6 +762,5 @@
             });
         }
     }
-    // END OF ZOOM HISTORY FUNCTIONS
 </script>
 @endsection

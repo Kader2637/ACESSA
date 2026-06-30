@@ -1,74 +1,64 @@
 @extends('layouts.student.app')
 
+@section('title', 'Katalog Kelas — Portal Mahasiswa')
 @section('page_title', 'Katalog Kelas')
 
 @section('style')
 <style>
-    .course-card { transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); }
-    .course-card:hover { transform: translateY(-8px); box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.1); }
-    .bg-grid-subtle {
-        background-image: linear-gradient(to right, #f1f5f9 1px, transparent 1px),
-                          linear-gradient(to bottom, #f1f5f9 1px, transparent 1px);
-        background-size: 30px 30px;
-    }
+    .course-card { transition: transform 0.2s ease, box-shadow 0.2s ease; border-radius: 1.5rem; border: 1px solid #e2e8f0; background: white; display: flex; flex-direction: column; }
+    .course-card:hover { transform: translateY(-4px); border-color: #cbd5e1; box-shadow: 0 10px 20px -10px rgba(0,0,0,0.05); }
+    .image-container { aspect-ratio: 16/9; overflow: hidden; border-radius: 1rem; position: relative; border: 1px solid #f1f5f9; }
 </style>
 @endsection
 
 @section('content')
-<div class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-8 rounded-[2rem] border border-slate-200 bg-grid-subtle shadow-sm" data-aos="fade-down">
+<div class="mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm animate-fade-in">
     <div>
-        <h2 class="text-3xl font-black text-slate-900 tracking-tight">Ruang <span class="text-indigo-600">Belajar</span></h2>
-        <p class="text-slate-500 font-medium mt-1">Akses semua materi dan kolaborasi dalam satu tempat.</p>
+        <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">Katalog <span class="text-indigo-650">Kelas Kuliah</span></h2>
+        <p class="text-slate-500 text-xs font-semibold mt-0.5">Akses semua materi ajar, kurikulum, dan kolaborasi dalam satu tempat.</p>
     </div>
-    <button id="joinClassButton" class="inline-flex items-center gap-2 px-6 py-3.5 bg-slate-900 text-white font-black uppercase text-[11px] tracking-widest rounded-2xl hover:bg-indigo-600 hover:shadow-lg hover:shadow-indigo-500/30 transition-all active:scale-95">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
-        Gabung Kelas Baru
+    <button id="joinClassButton" class="px-4 py-2 bg-slate-900 hover:bg-indigo-650 text-white font-bold text-xs rounded-xl transition-all shadow-sm active:scale-[0.98] shrink-0 flex items-center gap-1.5">
+        <i data-feather="plus" class="w-4 h-4"></i> Gabung Kelas Baru
     </button>
 </div>
 
-<div id="courses-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 pb-20">
+<div id="courses-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 pb-20" data-aos="fade-up">
     <div id="loading-state" class="col-span-full py-32 flex flex-col items-center justify-center">
-        <div class="w-12 h-12 border-4 border-slate-200 border-t-indigo-600 rounded-full animate-spin mb-4"></div>
-        <p class="text-slate-400 font-black text-[10px] uppercase tracking-[0.2em] animate-pulse">Memuat Data Kelas...</p>
+        <div class="w-8 h-8 border-3 border-slate-100 border-t-indigo-650 rounded-full animate-spin mb-3"></div>
+        <p class="text-slate-400 font-bold text-[10px] uppercase tracking-widest animate-pulse">Menghubungkan data kelas...</p>
     </div>
 </div>
 
-<div id="no-data" class="hidden col-span-full py-24 flex flex-col items-center justify-center text-center bg-white border-2 border-dashed border-slate-200 rounded-[3rem]" data-aos="zoom-in">
-    <div class="w-20 h-20 bg-slate-50 rounded-full flex items-center justify-center mb-6 text-slate-300">
-        <svg class="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.247 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+<div id="no-data" class="hidden py-24 flex-col items-center justify-center text-center bg-white border border-dashed border-slate-200 rounded-3xl" data-aos="zoom-in">
+    <div class="w-12 h-12 bg-slate-50 rounded-2xl flex items-center justify-center mb-4 text-slate-450">
+        <i data-feather="folder-open" class="w-6 h-6"></i>
     </div>
-    <h3 class="text-xl font-black text-slate-900 tracking-tight">Belum Ada Kelas</h3>
-    <p class="mt-2 text-slate-500 font-medium max-w-xs mx-auto text-sm">Gunakan kode kelas dari instruktur Anda untuk mulai belajar.</p>
+    <h3 class="font-bold text-slate-800 text-sm">Belum Ada Kelas</h3>
+    <p class="mt-1 text-slate-405 text-xs">Gunakan kode kelas dari dosen pengampu Anda untuk mulai bergabung dan belajar.</p>
 </div>
 
-<div id="joinModal" class="fixed inset-0 z-[60] hidden items-center justify-center p-4 transition-all duration-300">
-    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm opacity-0 transition-opacity duration-300" id="modalBackdrop"></div>
-    <div class="relative bg-white w-full max-w-lg rounded-[2.5rem] shadow-2xl scale-95 opacity-0 transition-all duration-300 overflow-hidden" id="modalContent">
-        <div class="p-10">
-            <div class="flex flex-col items-center text-center mb-8">
-                <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mb-6">
-                    <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
-                    </svg>
-                </div>
-                <h3 class="text-2xl font-black text-slate-900 tracking-tight">Gabung ke Kelas</h3>
-                <p class="text-slate-500 font-medium mt-2">Masukkan kode akses unik yang diberikan oleh instruktur Anda untuk mulai belajar.</p>
-            </div>
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-[10px] font-black text-slate-400 uppercase tracking-widest mb-2 ml-1">Kode Akses Kelas</label>
-                    <input type="text" id="classCodeInput" 
-                        class="w-full px-5 py-4 bg-slate-50 border border-slate-200 rounded-2xl text-slate-900 font-bold placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:ring-4 focus:ring-indigo-500/10 transition-all text-center tracking-widest" 
-                        placeholder="CONTOH: ACS-123">
-                </div>
-            </div>
-            <div class="grid grid-cols-2 gap-4 mt-10">
-                <button onclick="closeJoinModal()" class="py-4 bg-slate-100 text-slate-600 font-black uppercase text-[10px] tracking-widest rounded-2xl hover:bg-slate-200 transition-all">Batal</button>
-                <button id="confirmJoinBtn" class="py-4 bg-slate-900 text-white font-black uppercase text-[10px] tracking-widest rounded-2xl hover:bg-indigo-600 shadow-lg shadow-indigo-500/20 transition-all flex items-center justify-center gap-2">
-                    <span id="btnText">Gabung Sekarang</span>
-                    <div id="btnSpinner" class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                </button>
-            </div>
+{{-- MODAL: Join Classroom --}}
+<div id="joinModal" class="fixed inset-0 z-[1000] hidden items-center justify-center p-4">
+    <div class="absolute inset-0 bg-slate-900/60 backdrop-blur-sm" onclick="closeJoinModal()"></div>
+    <div class="relative bg-white w-full max-w-sm rounded-2xl shadow-2xl p-8 text-center border border-slate-200 animate-zoom-in">
+        <div class="w-16 h-16 bg-indigo-50 border border-indigo-100 text-indigo-600 rounded-xl flex items-center justify-center mx-auto mb-5">
+            <i data-feather="book-open" class="w-8 h-8"></i>
+        </div>
+        <h3 class="text-lg font-extrabold text-slate-900 mb-1">Gabung ke Kelas</h3>
+        <p class="text-slate-550 font-semibold mb-6 text-xs leading-relaxed">Masukkan kode akses kelas yang Anda terima dari dosen pengampu untuk bergabung.</p>
+        
+        <div>
+            <input type="text" id="classCodeInput" 
+                class="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-slate-900 font-bold placeholder-slate-400 focus:outline-none focus:border-indigo-600 focus:bg-white transition-all text-center tracking-widest text-sm" 
+                placeholder="CONTOH: ABCDEF">
+        </div>
+
+        <div class="flex gap-3 mt-6">
+            <button onclick="closeJoinModal()" class="flex-1 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-all">Batal</button>
+            <button id="confirmJoinBtn" class="flex-[2] py-2.5 bg-indigo-650 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md transition-all flex items-center justify-center gap-1.5">
+                <span id="btnText">Gabung Kelas</span>
+                <div id="btnSpinner" class="hidden w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+            </button>
         </div>
     </div>
 </div>
@@ -76,25 +66,13 @@
 
 @section('script')
 <script>
-    const modal = $('#joinModal');
-    const backdrop = $('#modalBackdrop');
-    const content = $('#modalContent');
-
     function openJoinModal() {
-        modal.removeClass('hidden').addClass('flex');
-        setTimeout(() => {
-            backdrop.removeClass('opacity-0');
-            content.removeClass('scale-95 opacity-0').addClass('scale-100 opacity-100');
-        }, 10);
+        $('#joinModal').removeClass('hidden').addClass('flex');
     }
 
     function closeJoinModal() {
-        backdrop.addClass('opacity-0');
-        content.removeClass('scale-100 opacity-100').addClass('scale-95 opacity-0');
-        setTimeout(() => {
-            modal.removeClass('flex').addClass('hidden');
-            $('#classCodeInput').val('');
-        }, 300);
+        $('#joinModal').removeClass('flex').addClass('hidden');
+        $('#classCodeInput').val('');
     }
 
     function loadClassroomData(userId) {
@@ -104,51 +82,56 @@
             success: function(response) {
                 $('#loading-state').remove();
                 const container = $('#courses-container');
-                container.find('.course-item').remove();
+                container.find('.course-card').remove();
 
                 if (response.status === "success" && response.StudentClassroomRelations.length === 0) {
                     $('#no-data').removeClass('hidden').addClass('flex');
+                    container.addClass('hidden');
+                    feather.replace();
                 } else {
                     $('#no-data').addClass('hidden');
+                    container.removeClass('hidden').addClass('grid');
+
                     response.StudentClassroomRelations.forEach(relation => {
                         const course = relation.course;
                         const user = relation.user;
-                        const courseThumbnail = course.thumbnail ? `/storage/${course.thumbnail}` : '/assets/user.png';
+                        const courseThumbnail = course.thumbnail ? `/storage/${course.thumbnail}` : '/user.png';
                         const authorImage = user.profile ? `/storage/${user.profile}` : '/user.png';
                         const desc = course.description.length > 80 ? course.description.substring(0, 80) + '...' : course.description;
 
                         const html = `
-                            <div class="course-item group bg-white border border-slate-200 rounded-[2.5rem] overflow-hidden flex flex-col h-full hover:shadow-2xl hover:shadow-indigo-500/10 transition-all duration-500 hover:-translate-y-1">
-                                <div class="relative aspect-[16/10] overflow-hidden bg-slate-100">
-                                    <img src="${courseThumbnail}" class="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105">
-                                    <div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 via-transparent to-transparent"></div>
-                                    <div class="absolute top-4 left-4">
-                                        <span class="px-3 py-1 bg-white/90 backdrop-blur text-indigo-600 font-black text-[9px] uppercase tracking-widest rounded-lg shadow-sm">ACESSA</span>
+                            <div class="course-card group">
+                                <div class="image-container relative mb-4">
+                                    <img src="${courseThumbnail}" class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300" onerror="this.onerror=null; this.src='/user.png';">
+                                    <div class="absolute top-3 left-3">
+                                        <span class="px-2.5 py-1 bg-white border border-slate-200 text-indigo-600 font-bold text-[8px] uppercase tracking-wider rounded-lg shadow-sm">
+                                            ${course.statusClass || 'Umum'}
+                                        </span>
                                     </div>
                                 </div>
-                                <div class="p-6 flex flex-col flex-grow">
-                                    <h5 class="text-lg font-extrabold text-slate-900 leading-tight line-clamp-2 group-hover:text-indigo-600 transition-colors">${course.name}</h5>
-                                    <p class="mt-3 text-slate-500 text-sm font-medium leading-relaxed line-clamp-2">${desc}</p>
-                                    <div class="mt-auto pt-6">
-                                        <div class="flex items-center justify-between mb-6">
+                                <div class="px-5 pb-5 flex flex-col flex-grow text-left">
+                                    <h5 class="text-sm font-extrabold text-slate-900 leading-snug line-clamp-1 group-hover:text-indigo-600 transition-colors">${course.name}</h5>
+                                    <p class="mt-2 text-slate-500 text-xs font-semibold leading-relaxed line-clamp-2">${desc}</p>
+                                    <div class="mt-auto pt-4 border-t border-slate-100 mt-5">
+                                        <div class="flex items-center justify-between mb-4">
                                             <div class="flex items-center gap-2">
-                                                <img src="${authorImage}" class="w-7 h-7 rounded-full border border-slate-100 object-cover">
-                                                <span class="text-xs font-bold text-slate-700">${course.teacher}</span>
+                                                <img src="${authorImage}" class="w-5 h-5 rounded-md border border-slate-100 object-cover" onerror="this.onerror=null; this.src='/user.png';">
+                                                <span class="text-[10px] font-bold text-slate-500 truncate max-w-[110px]">${course.teacher}</span>
                                             </div>
-                                            <div class="flex items-center gap-1.5 text-slate-400">
-                                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"></path></svg>
-                                                <span class="text-[10px] font-bold">${course.total_user}</span>
+                                            <div class="flex items-center gap-1 text-slate-400">
+                                                <i data-feather="users" class="w-3.5 h-3.5"></i>
+                                                <span class="text-[9px] font-extrabold text-slate-700">${course.total_user}</span>
                                             </div>
                                         </div>
-                                        <a href="/student/classroom/course/${course.id}" class="flex items-center justify-center gap-2 w-full py-4 bg-slate-900 text-white font-black uppercase text-[10px] tracking-[0.2em] rounded-2xl hover:bg-indigo-600 shadow-lg transition-all duration-300">
-                                            Masuk Kelas
-                                            <svg class="w-4 h-4 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                                        <a href="/student/classroom/course/${course.id}" class="w-full py-2.5 bg-slate-900 hover:bg-indigo-650 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]">
+                                            Masuk Kelas <i data-feather="arrow-right" class="w-4 h-4"></i>
                                         </a>
                                     </div>
                                 </div>
                             </div>`;
                         container.append(html);
                     });
+                    feather.replace();
                 }
             }
         });
@@ -160,54 +143,48 @@
         $('#joinClassButton').on('click', openJoinModal);
 
         $('#confirmJoinBtn').on('click', function() {
-        const code = $('#classCodeInput').val();
-        const btn = $(this);
-        const spinner = $('#btnSpinner');
-        const text = $('#btnText');
+            const code = $('#classCodeInput').val();
+            const btn = $(this);
+            const spinner = $('#btnSpinner');
+            const text = $('#btnText');
 
-        if (!code) {
-            toastr.warning("Silakan masukkan kode kelas!");
-            return;
-        }
-
-        btn.prop('disabled', true).addClass('opacity-70 cursor-not-allowed');
-        text.addClass('hidden');
-        spinner.removeClass('hidden');
-
-        $.ajax({
-            url: '/api/classroom/join',
-            method: 'POST',
-            headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
-            data: JSON.stringify({ 
-                user_id: {{ auth()->user()->id }}, 
-                classroom_code: code 
-            }),
-            contentType: 'application/json',
-            // Jika server kirim status 200/201
-            success: function(res) {
-                // Langsung ambil pesan dari server, jangan dicek manual teksnya
-                toastr.success(res.message || 'Berhasil bergabung!');
-                closeJoinModal();
-                loadClassroomData({{ auth()->user()->id }});
-            },
-            // Jika server kirim status 400, 404, 500, dll
-            error: function(xhr) {
-                let errorMsg = "Terjadi kesalahan sistem.";
-                
-                // Ambil pesan dinamis dari JSON server
-                if (xhr.responseJSON && xhr.responseJSON.message) {
-                    errorMsg = xhr.responseJSON.message;
-                }
-                
-                toastr.error(errorMsg);
-            },
-            complete: function() {
-                btn.prop('disabled', false).removeClass('opacity-70 cursor-not-allowed');
-                text.removeClass('hidden');
-                spinner.addClass('hidden');
+            if (!code) {
+                toastr.warning("Silakan masukkan kode kelas!");
+                return;
             }
+
+            btn.prop('disabled', true).addClass('opacity-70 cursor-not-allowed');
+            text.addClass('hidden');
+            spinner.removeClass('hidden');
+
+            $.ajax({
+                url: '/api/classroom/join',
+                method: 'POST',
+                headers: { 'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content') },
+                data: JSON.stringify({ 
+                    user_id: {{ auth()->user()->id }}, 
+                    classroom_code: code 
+                }),
+                contentType: 'application/json',
+                success: function(res) {
+                    toastr.success(res.message || 'Berhasil bergabung!');
+                    closeJoinModal();
+                    loadClassroomData({{ auth()->user()->id }});
+                },
+                error: function(xhr) {
+                    let errorMsg = "Terjadi kesalahan sistem.";
+                    if (xhr.responseJSON && xhr.responseJSON.message) {
+                        errorMsg = xhr.responseJSON.message;
+                    }
+                    toastr.error(errorMsg);
+                },
+                complete: function() {
+                    btn.prop('disabled', false).removeClass('opacity-70 cursor-not-allowed');
+                    text.removeClass('hidden');
+                    spinner.addClass('hidden');
+                }
+            });
         });
-    });
     });
 </script>
 @endsection

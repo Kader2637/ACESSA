@@ -17,29 +17,32 @@
             width: 100%; height: 100%;
             overflow: hidden;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            background: #0f172a; /* Tech Dark Theme */
-            color: #f8fafc;
+            background: #f1f3f9;
+            color: #0f172a;
         }
         #app-wrapper {
             display: flex;
             flex-direction: row;
             width: 100%;
-            height: 100%;
+            height: 100vh;
+            overflow: hidden;
         }
 
         /* ── LEFT: Zoom panel ── */
         #zoom-section {
             flex: 1 1 0%;
             position: relative;
-            background: #090d16;
+            background: #e2e8f0;
             min-width: 0;
+            height: 100%;
+            overflow: hidden;
         }
         #zoom-lobby {
             position: absolute; inset: 0; z-index: 40;
             display: flex; flex-direction: column;
             align-items: center; justify-content: center;
             padding: 2rem;
-            background: radial-gradient(circle at top, #1e1b4b 0%, #090d16 100%);
+            background: #f1f3f9;
             overflow-y: auto;
         }
         #zoom-lobby.hidden { display: none !important; }
@@ -47,6 +50,7 @@
             position: absolute; inset: 0; z-index: 10;
             width: 100%; height: 100%;
             background: #000;
+            overflow: hidden;
         }
         #zoom-container-wrapper.hidden { display: none !important; }
         #meetingSDKElement {
@@ -55,11 +59,13 @@
             width: 100% !important;
             height: 100% !important;
             background: #000;
+            overflow: hidden;
         }
         #meetingSDKElement .meeting-app,
         #meetingSDKElement .meeting-client {
             width: 100% !important;
             max-width: none !important;
+            height: 100% !important;
         }
 
         /* ── RIGHT: Settings panel ── */
@@ -68,14 +74,14 @@
             min-width: 280px;
             max-width: 280px;
             height: 100%;
-            background: #111827;
-            border-left: 1px solid rgba(255,255,255,0.06);
+            background: #ffffff;
+            border-left: 1px solid #e2e8f0;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             overflow-y: auto;
             z-index: 20;
-            box-shadow: -4px 0 16px rgba(0,0,0,0.2);
+            box-shadow: -4px 0 16px rgba(0,0,0,0.02);
             transition: transform 0.3s ease;
         }
         #settings-panel .panel-inner {
@@ -95,7 +101,7 @@
                 max-width: 320px;
                 min-width: unset;
                 transform: translateX(100%);
-                box-shadow: -8px 0 32px rgba(0,0,0,0.5);
+                box-shadow: -8px 0 32px rgba(0,0,0,0.1);
                 z-index: 9999;
             }
             #settings-panel.open { transform: translateX(0) !important; }
@@ -107,10 +113,10 @@
             bottom: 80px; right: 12px;
             z-index: 99999;
             width: 48px; height: 48px;
-            background: #4f46e5;
+            background: #d97706;
             border-radius: 50%;
             align-items: center; justify-content: center;
-            box-shadow: 0 4px 16px rgba(79,70,229,0.4);
+            box-shadow: 0 4px 16px rgba(217,119,6,0.3);
             cursor: pointer;
             border: none;
             color: #fff;
@@ -124,70 +130,99 @@
             left: 50%;
             transform: translateX(-50%);
             z-index: 2147483647;
-            background: rgba(0,0,0,0.85);
-            padding: 14px 32px;
+            background: rgba(255,255,255,0.95);
+            padding: 12px 28px;
             border-radius: 999px;
             max-width: 80vw;
             text-align: center;
             pointer-events: none;
-            border: 1px solid rgba(255,255,255,0.1);
-            backdrop-filter: blur(12px);
+            border: 1px solid #e2e8f0;
+            backdrop-filter: blur(8px);
+            box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
         }
         #zoom-subtitle-overlay.hidden { display: none !important; }
         #zoom-subtitle-text {
-            color: #fbbf24;
+            color: #1e293b;
             font-weight: 800;
             font-size: 1.35rem;
             line-height: 1.5;
             letter-spacing: 0.01em;
-            text-shadow: 0 2px 8px rgba(0,0,0,0.9);
+            text-shadow: none;
         }
 
         /* Lobby layouts */
         .glass-container {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(20px);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
             border-radius: 24px;
+            box-shadow: 0 10px 30px -10px rgba(0,0,0,0.05);
         }
         
         .meeting-card {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s ease;
         }
         .meeting-card:hover {
             transform: translateY(-2px);
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(99, 102, 241, 0.2);
+            border-color: #cbd5e1;
+            box-shadow: 0 8px 16px -8px rgba(0,0,0,0.05);
         }
         .meeting-card.active-hour {
-            background: rgba(16, 185, 129, 0.04);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            box-shadow: 0 0 25px rgba(16, 185, 129, 0.15);
+            background: #fffbeb;
+            border: 1px solid #fde68a;
+            box-shadow: 0 0 20px rgba(245,158,11,0.05);
         }
 
         .dashboard-select {
             display: block !important;
             width: 100% !important;
-            height: 42px !important;
-            padding: 8px 14px !important;
+            height: 40px !important;
+            padding: 8px 12px !important;
             font-size: 12px !important;
             font-weight: 700 !important;
-            color: #e2e8f0 !important;
-            background-color: #1f2937 !important;
-            border: 1px solid rgba(255,255,255,0.1) !important;
+            color: #334155 !important;
+            background-color: #f8fafc !important;
+            border: 1px solid #e2e8f0 !important;
             border-radius: 12px !important;
             cursor: pointer !important;
+            outline: none !important;
+        }
+        .dashboard-select:focus {
+            border-color: #d97706 !important;
+            background-color: #fff !important;
         }
         .dashboard-label {
             display: block !important;
             font-size: 9px !important;
-            font-weight: 800 !important;
+            font-weight: 850 !important;
             text-transform: uppercase !important;
-            color: #9ca3af !important;
+            color: #64748b !important;
             letter-spacing: 0.08em !important;
             margin-bottom: 6px !important;
+        }
+        .panel-heading {
+            font-size: 10px !important;
+            font-weight: 900 !important;
+            text-transform: uppercase !important;
+            color: #d97706 !important;
+            letter-spacing: 0.1em !important;
+            border-bottom: 1px solid #e2e8f0 !important;
+            padding-bottom: 8px !important;
+        }
+        .panel-brand {
+            font-weight: 900 !important;
+            color: #0f172a !important;
+            font-size: 15px !important;
+            letter-spacing: -0.02em !important;
+        }
+        .panel-brand-sub {
+            font-size: 8px !important;
+            font-weight: 800 !important;
+            text-transform: uppercase !important;
+            color: #d97706 !important;
+            letter-spacing: 0.15em !important;
+            margin-top: 2px !important;
         }
         .btn-exit {
             display: flex !important;
@@ -195,15 +230,16 @@
             justify-content: center !important;
             gap: 8px !important;
             width: 100% !important;
-            padding: 14px !important;
+            padding: 12px !important;
             background: #dc2626 !important;
             color: #fff !important;
             font-size: 10px !important;
             font-weight: 900 !important;
             text-transform: uppercase !important;
-            letter-spacing: 0.15em !important;
-            border-radius: 16px !important;
+            letter-spacing: 0.12em !important;
+            border-radius: 12px !important;
             text-decoration: none !important;
+            transition: background 0.15s ease !important;
         }
         .btn-exit:hover { background: #b91c1c !important; }
     </style>
@@ -222,28 +258,28 @@
                 
                 {{-- If meeting number specified, show direct join card --}}
                 <div id="join-specific-meeting-container" class="w-full max-w-md glass-container p-8 hidden flex flex-col items-center text-center">
-                    <div class="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center text-3xl mb-6 animate-pulse">📹</div>
-                    <h2 id="lobby-heading" class="text-xl font-extrabold text-white mb-2">Mempersiapkan Rapat</h2>
-                    <p class="text-slate-400 text-xs leading-relaxed mb-6">Pastikan izin kamera dan mikrofon Anda sudah disetujui di peramban.</p>
+                    <div class="w-16 h-16 bg-amber-50 border border-amber-200 text-amber-600 rounded-3xl flex items-center justify-center text-3xl mb-6">📹</div>
+                    <h2 id="lobby-heading" class="text-xl font-black text-slate-900 mb-2">Mempersiapkan Rapat</h2>
+                    <p class="text-slate-500 text-xs leading-relaxed mb-6 font-semibold">Pastikan izin kamera dan mikrofon Anda sudah disetujui di peramban.</p>
                     
-                    <button id="btn-join-meeting" class="w-full py-4 bg-indigo-600 hover:bg-indigo-500 text-white font-extrabold text-xs uppercase tracking-widest rounded-xl transition-all shadow-lg shadow-indigo-600/35 active:scale-[0.98]">
+                    <button id="btn-join-meeting" class="w-full py-3.5 bg-slate-900 hover:bg-amber-500 hover:text-slate-950 text-white font-extrabold text-xs uppercase tracking-widest rounded-xl transition-all shadow-md active:scale-[0.98]">
                         Masuk Kelas Virtual
                     </button>
                     
-                    <button id="btn-show-schedules" class="mt-4 text-xs font-bold text-indigo-400 hover:text-indigo-300 transition-colors">
+                    <button id="btn-show-schedules" class="mt-4 text-xs font-bold text-amber-600 hover:text-amber-800 transition-colors">
                         ← Lihat Jadwal Sesi Lainnya
                     </button>
                 </div>
 
                 {{-- If no meeting or want to switch, show Schedule Dashboard --}}
                 <div id="schedule-dashboard" class="w-full max-w-4xl glass-container p-6 md:p-8">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-white/5 pb-6">
+                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8 border-b border-slate-200/60 pb-6">
                         <div>
-                            <span class="text-xs text-indigo-400 font-bold uppercase tracking-widest">Sesi Kelas Virtual</span>
-                            <h2 class="text-2xl font-extrabold text-white mt-1">Jadwal Zoom Meeting</h2>
+                            <span class="text-xs text-amber-600 font-bold uppercase tracking-widest">Sesi Kelas Virtual</span>
+                            <h2 class="text-2xl font-black text-slate-900 mt-1">Jadwal Zoom Meeting</h2>
                         </div>
                         <div class="flex items-center gap-3">
-                            <select id="schedule-class-filter" class="px-4 py-2 bg-slate-800 border border-white/10 rounded-xl text-xs font-bold text-slate-300 outline-none cursor-pointer">
+                            <select id="schedule-class-filter" class="px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold text-slate-700 outline-none cursor-pointer">
                                 <option value="all">Semua Kelas</option>
                             </select>
                         </div>
@@ -320,6 +356,24 @@
                     </select>
                 </div>
 
+                <!-- Subtitle toggle switch -->
+                <div class="flex items-center justify-between mt-2">
+                    <label class="dashboard-label" style="margin-bottom: 0;">Tampilkan Subtitel:</label>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggle-subtitles" class="sr-only peer" checked>
+                        <div class="w-9 h-5 bg-slate-800 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-650 border border-slate-700"></div>
+                    </label>
+                </div>
+
+                <!-- Translation toggle switch -->
+                <div class="flex items-center justify-between mt-2">
+                    <label class="dashboard-label" style="margin-bottom: 0;">Terjemahan Otomatis:</label>
+                    <label class="relative inline-flex items-center cursor-pointer">
+                        <input type="checkbox" id="toggle-translation" class="sr-only peer" checked>
+                        <div class="w-9 h-5 bg-slate-800 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-indigo-650 border border-slate-700"></div>
+                    </label>
+                </div>
+
             </div>
 
             <!-- Exit button -->
@@ -378,16 +432,29 @@
         // ── Fetch Schedules & Highlight Current Hour ──
         const authId = '{{ auth()->user()->id }}';
         let allMeetings = [];
+        let meetingDbId = urlParams.get('meeting_db_id') || '';
+
+        const classesUrl = (role === 1) 
+            ? `/api/my/classroom/teacher/data/${authId}`
+            : `/api/student/classroom/data/${authId}`;
 
         $.ajax({
-            url: `/api/my/classroom/teacher/data/${authId}`,
+            url: classesUrl,
             method: 'GET',
             success: function(res) {
-                const classes = res.data || [];
+                let classes = [];
+                if (role === 1) {
+                    classes = res.data || [];
+                } else {
+                    const relations = res.StudentClassroomRelations || [];
+                    classes = relations.map(r => r.course);
+                }
                 
                 // Add classrooms to filter select
                 classes.forEach(c => {
-                    $('#schedule-class-filter').append(`<option value="${c.id}">${c.name}</option>`);
+                    if (c && c.id && c.name) {
+                        $('#schedule-class-filter').append(`<option value="${c.id}">${c.name}</option>`);
+                    }
                 });
 
                 if (classes.length === 0) {
@@ -398,6 +465,7 @@
 
                 let fetched = 0;
                 classes.forEach(kelas => {
+                    if (!kelas || !kelas.id) return;
                     $.ajax({
                         url: `/api/zoom-meetings/${kelas.id}`,
                         method: 'GET',
@@ -444,12 +512,35 @@
                 // Check if current hour matches meeting hour (within same hour / +-45 minutes margin)
                 const diffMs = Math.abs(now - mTime);
                 const isActiveHour = diffMs < (45 * 60 * 1000); // 45 minutes margin
+                const isEnded = m.status === 'ended';
 
-                const activeTag = isActiveHour 
-                    ? `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded-lg border border-emerald-500/20 animate-pulse">🔴 Jam Sesi Aktif</span>`
-                    : `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-500/10 text-slate-400 text-[10px] font-bold rounded-lg border border-white/5">Terjadwal</span>`;
+                let activeTag = '';
+                let buttonHtml = '';
+                let cardClass = 'meeting-card';
 
-                const cardClass = isActiveHour ? 'meeting-card active-hour' : 'meeting-card';
+                if (isEnded) {
+                    cardClass = 'meeting-card opacity-50';
+                    activeTag = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-red-500/10 text-red-450 text-[10px] font-bold rounded-lg border border-red-500/20">Selesai / Berakhir</span>`;
+                    buttonHtml = `<button class="px-4 py-2 bg-slate-800 text-slate-500 font-bold text-xs rounded-xl cursor-not-allowed" disabled>Selesai</button>`;
+                } else if (isActiveHour) {
+                    cardClass = 'meeting-card active-hour';
+                    activeTag = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded-lg border border-emerald-500/20 animate-pulse">🔴 Jam Sesi Aktif</span>`;
+                    buttonHtml = `
+                        <button onclick="selectMeeting('${m.meeting_number}', '${m.passcode}', '${m.classroom_id}', '${m.id}')" 
+                                class="px-4 py-2 bg-emerald-600 hover:bg-emerald-500 shadow-md shadow-emerald-600/20 text-white font-bold text-xs rounded-xl transition-all">
+                            Mulai Sesi
+                        </button>
+                    `;
+                } else {
+                    activeTag = `<span class="inline-flex items-center gap-1.5 px-2.5 py-1 bg-slate-500/10 text-slate-400 text-[10px] font-bold rounded-lg border border-white/5">Terjadwal</span>`;
+                    buttonHtml = `
+                        <button onclick="selectMeeting('${m.meeting_number}', '${m.passcode}', '${m.classroom_id}', '${m.id}')" 
+                                class="px-4 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl transition-all">
+                            Mulai Sesi
+                        </button>
+                    `;
+                }
+
                 const timeString = mTime.toLocaleDateString('id-ID', {day: '2-digit', month: 'short'}) + ', ' + mTime.toLocaleTimeString('id-ID', {hour: '2-digit', minute: '2-digit'}) + ' WIB';
 
                 grid.append(`
@@ -464,21 +555,19 @@
                         </div>
                         <div class="mt-4 flex items-center justify-between border-t border-white/5 pt-3">
                             <span class="text-[10px] font-mono text-slate-500">ID: ${m.meeting_number || '—'}</span>
-                            <button onclick="selectMeeting('${m.meeting_number}', '${m.passcode}', '${m.classroom_id}')" 
-                                    class="px-4 py-2 ${isActiveHour ? 'bg-emerald-600 hover:bg-emerald-500 shadow-md shadow-emerald-600/20' : 'bg-indigo-600 hover:bg-indigo-500'} text-white font-bold text-xs rounded-xl transition-all">
-                                Mulai Sesi
-                            </button>
+                            ${buttonHtml}
                         </div>
                     </div>
                 `);
             });
         }
 
-        function selectMeeting(mNum, pass, cId) {
-            const nextUrl = `${window.location.pathname}?meeting_number=${mNum}&passcode=${pass}&role=1&course_id=${cId}`;
+        function selectMeeting(mNum, pass, cId, dbId) {
+            const nextUrl = `${window.location.pathname}?meeting_number=${mNum}&passcode=${pass}&role=${role}&course_id=${cId}&meeting_db_id=${dbId}`;
             window.history.pushState({}, '', nextUrl);
             meetingNumber = mNum;
             passcode = pass;
+            meetingDbId = dbId;
             $('#join-specific-meeting-container').removeClass('hidden');
             $('#schedule-dashboard').addClass('hidden');
         }
@@ -504,6 +593,8 @@
         let captionInterval    = null;
         let lastCaptionId      = 0;
         let overlayTimeout     = null;
+        let translationAbortController = null;
+        let translationTimeout = null;
 
         const client = ZoomMtgEmbedded.createClient();
 
@@ -573,6 +664,58 @@
         // Accessibility Speech
         function initAccessibility() {
             if (role === 1) startMic();
+            startCaptionPolling();
+        }
+
+        function startCaptionPolling() {
+            if (captionInterval) clearInterval(captionInterval);
+
+            captionInterval = setInterval(() => {
+                $.ajax({
+                    url: `/api/live-captions?course_id=${courseId}&last_id=${lastCaptionId}`,
+                    method: 'GET',
+                    success: function(res) {
+                        if (res.success && res.data.length > 0) {
+                            res.data.forEach(caption => {
+                                lastCaptionId = Math.max(lastCaptionId, caption.id);
+                                
+                                // Do not display own broadcasted caption again for host
+                                if (role === 1 && caption.user_id == authId) {
+                                    return;
+                                }
+
+                                processCaption(caption.text, caption.language, caption.user_name || 'Pembicara');
+                            });
+                        }
+                    }
+                });
+            }, 2500);
+        }
+
+        function processCaption(text, srcLang, speakerName) {
+            const isTranslationEnabled = $('#toggle-translation').is(':checked');
+            const targetLang = $('#subtitle-lang').val();
+            const srcLangShort = srcLang.split('-')[0];
+
+            if (isTranslationEnabled && srcLangShort !== targetLang) {
+                const apiUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${srcLangShort}&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
+
+                fetch(apiUrl)
+                    .then(r => r.json())
+                    .then(transRes => {
+                        if (transRes && transRes[0]) {
+                            const translatedText = transRes[0].map(x => x ? x[0] : '').join('');
+                            showSubtitle(`<span class="text-slate-400 font-medium">${speakerName}:</span> ${translatedText} <span class="text-[9px] text-yellow-500/80 font-bold uppercase">(Translated)</span>`, true);
+                        } else {
+                            showSubtitle(`<span class="text-slate-400 font-medium">${speakerName}:</span> ${text}`, true);
+                        }
+                    })
+                    .catch(() => {
+                        showSubtitle(`<span class="text-slate-400 font-medium">${speakerName}:</span> ${text}`, true);
+                    });
+            } else {
+                showSubtitle(`<span class="text-slate-400 font-medium">${speakerName}:</span> ${text}`, true);
+            }
         }
 
         function startMic() {
@@ -590,21 +733,61 @@
             };
 
             recognition.onresult = function (event) {
-                let final = '';
+                let interimTranscript = '';
+                let finalTranscript = '';
                 for (let i = event.resultIndex; i < event.results.length; i++) {
+                    const transcriptText = event.results[i][0].transcript;
                     if (event.results[i].isFinal) {
-                        final += event.results[i][0].transcript;
+                        finalTranscript += transcriptText;
+                    } else {
+                        interimTranscript += transcriptText;
                     }
                 }
-                if (final.trim()) {
-                    const text = final.trim();
-                    showSubtitle(text, true);
+                
+                const liveText = (finalTranscript + interimTranscript).trim();
+                if (!liveText) return;
 
+                const spokenLang = $('#spoken-lang').val();
+                const isTranslationEnabled = $('#toggle-translation').is(':checked');
+                const targetLang = $('#subtitle-lang').val();
+                const srcLangShort = spokenLang.split('-')[0];
+
+                if (isTranslationEnabled && targetLang && targetLang !== 'none' && srcLangShort !== targetLang) {
+                    // Debounce and fetch translation in real-time
+                    if (translationTimeout) clearTimeout(translationTimeout);
+                    if (translationAbortController) {
+                        translationAbortController.abort();
+                    }
+                    translationTimeout = setTimeout(() => {
+                        translationAbortController = new AbortController();
+                        const signal = translationAbortController.signal;
+                        const apiUrl = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${srcLangShort}&tl=${targetLang}&dt=t&q=${encodeURIComponent(liveText)}`;
+
+                        fetch(apiUrl, { signal })
+                            .then(r => r.json())
+                            .then(transRes => {
+                                if (transRes && transRes[0]) {
+                                    const translatedText = transRes[0].map(x => x ? x[0] : '').join('');
+                                    showSubtitle(`<span class="text-slate-400 font-medium">Anda:</span> ${translatedText} <span class="text-[9px] text-yellow-500/80 font-bold uppercase">(Translated)</span>`, true);
+                                }
+                            })
+                            .catch(err => {
+                                if (err.name !== 'AbortError') {
+                                    console.error("Translation error:", err);
+                                }
+                            });
+                    }, 50); // 50ms debounce
+                } else {
+                    showSubtitle(`<span class="text-slate-400 font-medium">Anda:</span> ${liveText}`, false);
+                }
+
+                if (finalTranscript.trim()) {
+                    const text = finalTranscript.trim();
                     // Broadcast
                     $.ajax({
                         url: '/api/live-captions',
                         method: 'POST',
-                        data: { course_id: courseId, text: text, language: $('#spoken-lang').val() }
+                        data: { course_id: courseId, text: text, language: spokenLang }
                     });
                 }
             };
@@ -617,6 +800,9 @@
             if (!isSubtitlesEnabled) return;
             const textEl  = document.getElementById('zoom-subtitle-text');
             const overlay = document.getElementById('zoom-subtitle-overlay');
+            const fontSize = $('#font-size').val() || '1.35rem';
+            
+            textEl.style.fontSize = fontSize;
             textEl.innerHTML = text;
             overlay.classList.remove('hidden');
             clearTimeout(overlayTimeout);
@@ -624,6 +810,20 @@
                 overlay.classList.add('hidden');
             }, 6000);
         }
+
+        // Toggle Subtitle Switch listener
+        $('#toggle-subtitles').on('change', function() {
+            isSubtitlesEnabled = this.checked;
+            if (!isSubtitlesEnabled) {
+                $('#zoom-subtitle-overlay').addClass('hidden');
+            }
+            toastr.info(isSubtitlesEnabled ? 'Subtitel Diaktifkan' : 'Subtitel Dinonaktifkan');
+        });
+
+        // Toggle Translation Switch listener
+        $('#toggle-translation').on('change', function() {
+            toastr.info(this.checked ? 'Terjemahan Otomatis Aktif' : 'Terjemahan Otomatis Nonaktif');
+        });
     </script>
 </body>
 </html>

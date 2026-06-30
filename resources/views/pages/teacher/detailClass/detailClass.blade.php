@@ -56,7 +56,7 @@
         <div class="relative z-10 flex flex-col md:flex-row gap-6 items-start md:items-center justify-between">
             <div class="flex items-center gap-5">
                 <div class="w-16 h-16 rounded-2xl overflow-hidden border border-white/10 flex-shrink-0 bg-slate-800">
-                    <img id="class-thumbnail" class="w-full h-full object-cover" src="/assets/user.png" onerror="this.src='/assets/user.png'">
+                    <img id="class-thumbnail" class="w-full h-full object-cover" src="/user.png" onerror="this.onerror=null; this.src='/user.png'">
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
@@ -217,7 +217,7 @@
                 $('#class-status-badge').text(classroom.statusClass || 'public');
                 $('#class-sks').text((classroom.sks || 3) + ' SKS');
                 
-                const thumb = classroom.thumbnail ? `/storage/${classroom.thumbnail}` : '/assets/user.png';
+                const thumb = classroom.thumbnail ? `/storage/${classroom.thumbnail}` : '/user.png';
                 $('#class-thumbnail').attr('src', thumb);
 
                 // Set course details link

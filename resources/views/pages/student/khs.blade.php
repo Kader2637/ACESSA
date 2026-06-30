@@ -1,89 +1,82 @@
 @extends('layouts.student.app')
 
-@section('page_title', 'Kartu Hasil Studi (KHS)')
+@section('title', 'KHS Akademik — Portal Mahasiswa')
+@section('page_title', 'Kartu Hasil Studi')
 
 @section('style')
 <style>
-    .glass-card { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.5); }
-    .table-container { background: white; border-radius: 2.5rem; border: 1px solid #f1f5f9; overflow: hidden; }
-    .custom-table th { font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; padding: 1.5rem 1rem; border: none; background: #f8fafc; }
-    .custom-table td { padding: 1.25rem 1rem; vertical-align: middle; border-bottom: 1px solid #f1f5f9; font-weight: 600; color: #1e293b; font-size: 13px; }
-    .custom-select { background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 1.25rem; padding: 0.85rem 1.25rem; font-weight: 700; transition: all 0.2s; color: #0f172a; outline: none; }
-    .custom-select:focus { border-color: #4f46e5; background: white; box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1); }
+    .stat-box { border-radius: 1.5rem; border: 1px solid #e2e8f0; background: white; padding: 1.5rem; display: flex; flex-direction: column; justify-content: space-between; }
+    .table-container { background: white; border-radius: 1.5rem; border: 1px solid #e2e8f0; overflow: hidden; }
+    .khs-table th { font-size: 9px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: #64748b; padding: 1rem; border-bottom: 1px solid #e2e8f0; background: #f8fafc; }
+    .khs-table td { padding: 1rem; vertical-align: middle; border-bottom: 1px solid #f1f5f9; font-weight: 600; color: #1e293b; font-size: 12px; }
 </style>
 @endsection
 
 @section('content')
-<div class="mb-10 flex flex-col md:flex-row md:items-center justify-between gap-6 bg-white p-8 rounded-[2.5rem] border border-slate-200 shadow-sm" data-aos="fade-down">
+<div class="mb-6 flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-3xl border border-slate-200 shadow-sm animate-fade-in">
     <div>
-        <h2 class="text-3xl font-black text-slate-900 tracking-tight">Kartu Hasil <span class="text-indigo-600">Studi (KHS)</span></h2>
-        <p class="text-slate-500 font-medium mt-1 uppercase text-[10px] tracking-widest text-indigo-500">Hasil Evaluasi Akademik Mahasiswa</p>
+        <h2 class="text-xl font-extrabold text-slate-900 tracking-tight">KHS &amp; <span class="text-indigo-650">Hasil Evaluasi</span></h2>
+        <p class="text-slate-500 text-xs font-semibold mt-0.5">Daftar nilai akademik mahasiswa per semester berjalan.</p>
     </div>
     
-    <!-- Semester Filter -->
-    <div class="flex items-center gap-3">
-        <label class="text-[10px] font-black uppercase tracking-wider text-slate-400">Pilih Semester:</label>
-        <select id="semester-selector" class="custom-select min-w-[240px] shadow-sm">
+    {{-- Semester Selector --}}
+    <div class="flex items-center gap-2">
+        <label class="text-[9px] font-bold uppercase tracking-wider text-slate-400">Pilih Semester:</label>
+        <select id="semester-selector" class="px-3.5 py-2 bg-slate-50 border border-slate-250 rounded-xl text-xs font-bold text-slate-700 outline-none focus:border-yellow-500 focus:bg-white transition-all shadow-sm min-w-[200px]">
             <option value="">Memuat semester...</option>
         </select>
     </div>
 </div>
 
-<!-- Academic Stats Panel -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
-    <!-- IPS Card -->
-    <div class="bg-indigo-600 rounded-[2.5rem] p-8 text-white relative overflow-hidden shadow-xl shadow-indigo-600/20" data-aos="zoom-in" data-aos-delay="100">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-white/10 rounded-full blur-2xl -mr-8 -mt-8"></div>
-        <div class="relative z-10">
-            <p class="text-[10px] font-black uppercase tracking-[0.2em] opacity-60">Indeks Prestasi Semester (IPS)</p>
-            <h3 class="text-5xl font-black mt-4 tracking-tight" id="ips-val">0.00</h3>
-            <p class="text-xs font-semibold mt-3 text-indigo-100 opacity-80" id="ips-desc">Pilih semester untuk kalkulasi</p>
+{{-- Stats Panel --}}
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8" data-aos="fade-up" data-aos-delay="50">
+    <div class="bg-yellow-500 rounded-3xl p-6 text-slate-950 relative overflow-hidden shadow-sm">
+        <div>
+            <p class="text-[9px] font-black uppercase tracking-wider opacity-70">Indeks Prestasi Semester (IPS)</p>
+            <h3 class="text-4xl font-black mt-3 tracking-tight" id="ips-val">0.00</h3>
+            <p class="text-[10px] font-bold mt-2 opacity-80" id="ips-desc">Pilih semester untuk kalkulasi</p>
         </div>
     </div>
 
-    <!-- Total SKS Card -->
-    <div class="bg-white border border-slate-100 rounded-[2.5rem] p-8 relative overflow-hidden shadow-sm" data-aos="zoom-in" data-aos-delay="200">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full blur-2xl -mr-8 -mt-8"></div>
-        <div class="relative z-10">
-            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Total SKS Diambil</p>
-            <h3 class="text-5xl font-black mt-4 tracking-tight text-slate-900" id="sks-total">0</h3>
-            <p class="text-xs font-semibold mt-3 text-slate-500">Bobot total kredit akademik</p>
+    <div class="stat-box">
+        <div>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">Total SKS Diambil</p>
+            <h3 class="text-3xl font-black mt-3 tracking-tight text-slate-800" id="sks-total">0</h3>
         </div>
+        <p class="text-[10px] font-bold mt-2 text-slate-550">Kredit semester berjalan</p>
     </div>
 
-    <!-- SKS Lulus Card -->
-    <div class="bg-white border border-slate-100 rounded-[2.5rem] p-8 relative overflow-hidden shadow-sm" data-aos="zoom-in" data-aos-delay="300">
-        <div class="absolute top-0 right-0 w-32 h-32 bg-slate-50 rounded-full blur-2xl -mr-8 -mt-8"></div>
-        <div class="relative z-10">
-            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">SKS Dinyatakan Lulus</p>
-            <h3 class="text-5xl font-black mt-4 tracking-tight text-emerald-600" id="sks-lulus">0</h3>
-            <p class="text-xs font-semibold mt-3 text-slate-500" id="sks-lulus-desc">Nilai mata kuliah >= C</p>
+    <div class="stat-box">
+        <div>
+            <p class="text-[9px] font-bold text-slate-400 uppercase tracking-wider">SKS Dinyatakan Lulus</p>
+            <h3 class="text-3xl font-black mt-3 tracking-tight text-emerald-600" id="sks-lulus">0</h3>
         </div>
+        <p class="text-[10px] font-bold mt-2 text-slate-550" id="sks-lulus-desc">Nilai mata kuliah &gt;= C</p>
     </div>
 </div>
 
-<!-- KHS Table -->
-<div class="table-container shadow-xl shadow-slate-200/50 mb-12" data-aos="fade-up">
+{{-- KHS Table --}}
+<div class="table-container shadow-sm mb-12" data-aos="fade-up" data-aos-delay="100">
     <div class="overflow-x-auto">
-        <table class="w-full text-left custom-table">
+        <table class="w-full text-left khs-table">
             <thead>
                 <tr>
-                    <th class="text-center w-16">No</th>
-                    <th class="w-28">Kode MK</th>
+                    <th class="text-center w-12">No</th>
+                    <th class="w-24">Kode MK</th>
                     <th>Nama Mata Kuliah</th>
                     <th>Dosen Pengampu</th>
-                    <th class="text-center w-20">SKS</th>
-                    <th class="text-center w-24">Nilai Angka</th>
-                    <th class="text-center w-24">Nilai Huruf</th>
-                    <th class="text-center w-20">Bobot</th>
-                    <th class="text-center w-32">Status</th>
+                    <th class="text-center w-16">SKS</th>
+                    <th class="text-center w-20">Nilai Angka</th>
+                    <th class="text-center w-20">Nilai Huruf</th>
+                    <th class="text-center w-16">Bobot</th>
+                    <th class="text-center w-24">Status</th>
                 </tr>
             </thead>
             <tbody id="khs-data-list">
                 <tr>
                     <td colspan="9" class="text-center py-20 text-slate-400 font-medium">
-                        <div class="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                        Memuat data KHS...
+                        <div class="w-6 h-6 border-2 border-slate-100 border-t-yellow-500 rounded-full animate-spin mx-auto mb-3"></div>
+                        Memuat data evaluasi akademik...
                     </td>
                 </tr>
             </tbody>
@@ -133,8 +126,8 @@
             $('#khs-data-list').html(`
                 <tr>
                     <td colspan="9" class="text-center py-20 text-slate-400 font-medium">
-                        <div class="w-10 h-10 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                        Mengambil data KHS...
+                        <div class="w-6 h-6 border-2 border-slate-100 border-t-yellow-500 rounded-full animate-spin mx-auto mb-3"></div>
+                        Mengambil data akademik...
                     </td>
                 </tr>
             `);
@@ -164,22 +157,22 @@
                         
                         if (data.khs_items.length > 0) {
                             data.khs_items.forEach((item, index) => {
-                                let statusClass = 'bg-slate-100 text-slate-600';
+                                let statusClass = 'bg-slate-100 text-slate-650';
                                 if (item.status === 'Lulus') statusClass = 'bg-emerald-50 text-emerald-600 border border-emerald-100';
                                 else if (item.status === 'Tidak Lulus') statusClass = 'bg-rose-50 text-rose-600 border border-rose-100';
                                 
                                 list.append(`
                                     <tr class="hover:bg-slate-50 transition-colors">
                                         <td class="text-center text-slate-400 font-bold">${index + 1}</td>
-                                        <td class="font-black text-indigo-600">${item.code}</td>
-                                        <td class="font-extrabold text-slate-900">${item.name}</td>
+                                        <td class="font-extrabold text-yellow-650">${item.code}</td>
+                                        <td class="font-extrabold text-slate-800">${item.name}</td>
                                         <td class="text-slate-500 font-medium">${item.lecturer}</td>
-                                        <td class="text-center text-slate-900 font-black">${item.sks}</td>
+                                        <td class="text-center text-slate-800 font-black">${item.sks}</td>
                                         <td class="text-center font-bold text-slate-700">${item.nilai_angka}</td>
-                                        <td class="text-center"><span class="px-3.5 py-1.5 bg-slate-100 text-slate-800 rounded-full font-black text-xs">${item.nilai_huruf}</span></td>
-                                        <td class="text-center font-black text-slate-900">${item.bobot.toFixed(1)}</td>
+                                        <td class="text-center"><span class="px-2.5 py-1 bg-slate-100 text-slate-850 rounded-lg font-extrabold text-xs border border-slate-200">${item.nilai_huruf}</span></td>
+                                        <td class="text-center font-black text-slate-800">${item.bobot.toFixed(1)}</td>
                                         <td class="text-center">
-                                            <span class="px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-wider ${statusClass}">
+                                            <span class="px-2.5 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider ${statusClass}">
                                                 ${item.status}
                                             </span>
                                         </td>
@@ -187,7 +180,8 @@
                                 `);
                             });
                         } else {
-                            list.html('<tr><td colspan="9" class="text-center py-24 text-slate-400 font-medium"><img src="/no-data.png" class="w-24 mx-auto opacity-30 mb-4" onerror="this.src=\'https://cdn-icons-png.flaticon.com/512/7486/7486754.png\'"><h4 class="text-slate-400 font-bold uppercase tracking-widest text-[10px]">Anda belum bergabung ke kelas mana pun di semester ini</h4></td></tr>');
+                            list.html('<tr><td colspan="9" class="text-center py-24 text-slate-400 font-medium"><i data-feather="slash" class="w-10 h-10 mx-auto opacity-30 mb-3"></i><p class="text-slate-400 font-bold uppercase tracking-widest text-[9px]">Anda belum bergabung ke kelas mana pun di semester ini</p></td></tr>');
+                            feather.replace();
                         }
                     } else {
                         toastr.error('Gagal mengambil data KHS.');
