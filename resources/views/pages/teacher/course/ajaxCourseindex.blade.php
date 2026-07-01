@@ -245,6 +245,64 @@
     </div>
 </div>
 
+{{-- MODAL DETAIL KEHADIRAN --}}
+<div id="modal-detail-attendance" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-950/80 backdrop-blur-md overflow-y-auto p-4 md:p-6">
+    <div class="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden border border-slate-100 flex flex-col h-full max-h-[80vh] animate-scale-in text-left">
+        
+        {{-- Header --}}
+        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 flex-shrink-0">
+            <div>
+                <h4 class="font-extrabold text-slate-900 text-base" id="detail-session-title">Detail Kehadiran</h4>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5" id="detail-session-code"></p>
+            </div>
+            <button onclick="closeDetailModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        {{-- Stats & Quick QR Action --}}
+        <div class="p-6 bg-indigo-50 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 flex-shrink-0">
+            <div class="flex gap-6 text-xs font-bold text-slate-650">
+                <div>Hadir: <span id="detail-count-present" class="text-emerald-600 font-black text-sm">0</span></div>
+                <div class="w-px h-4 bg-slate-200"></div>
+                <div>Tidak Hadir: <span id="detail-count-absent" class="text-red-500 font-black text-sm">0</span></div>
+                <div class="w-px h-4 bg-slate-200"></div>
+                <div>Total Siswa: <span id="detail-count-total" class="text-slate-900 font-black text-sm">0</span></div>
+            </div>
+            <button id="btn-show-qr-from-detail" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase text-[10px] tracking-widest rounded-xl transition-all shadow-sm flex items-center gap-1.5">
+                ⚡ Tampilkan QR
+            </button>
+        </div>
+
+        {{-- Table --}}
+        <div class="flex-grow overflow-y-auto p-6">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 border-b border-slate-100 text-slate-400 font-bold uppercase tracking-wider">
+                    <tr>
+                        <th class="px-6 py-3 w-16 text-center">No</th>
+                        <th class="px-6 py-3">Nama Lengkap</th>
+                        <th class="px-6 py-3">Email</th>
+                        <th class="px-6 py-3">Waktu Absen</th>
+                        <th class="px-6 py-3 text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="detail-attendance-table-body" class="divide-y divide-slate-50 text-slate-700 font-semibold"></tbody>
+            </table>
+            <div id="detail-attendance-empty" class="py-12 text-center text-slate-400 text-xs font-semibold hidden">
+                Belum ada siswa terdaftar di kelas ini.
+            </div>
+        </div>
+
+        {{-- Footer --}}
+        <div class="p-6 border-t border-slate-100 flex-shrink-0 bg-slate-50/50 flex justify-end">
+            <button onclick="closeDetailModal()" class="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all">
+                Tutup
+            </button>
+        </div>
+
+    </div>
+</div>
+
 @endsection
 
 @section('script')
@@ -496,9 +554,12 @@
                     const now = new Date();
                     const isExpired = validUntil < now;
                     
-                    const actionBtn = isExpired 
-                        ? `<button onclick="openQRModal(${s.id})" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10px] font-bold">Lihat Kehadiran</button>`
-                        : `<button onclick="openQRModal(${s.id})" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold flex items-center gap-1">⚡ Tampilkan QR</button>`;
+                    const actionBtn = `
+                        <div class="flex justify-end gap-2">
+                            <button onclick="openQRModal(${s.id})" class="px-2.5 py-1.5 bg-indigo-50 hover:bg-indigo-600 hover:text-white text-indigo-600 rounded-lg text-[10px] font-bold transition-all flex items-center gap-1">⚡ QR</button>
+                            <button onclick="openDetailModal(${s.id})" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10px] font-bold transition-all">📊 Detail</button>
+                        </div>
+                    `;
 
                     const statusBadge = isExpired
                         ? `<span class="text-red-500 font-bold">Kedaluwarsa</span>`
@@ -519,6 +580,76 @@
             },
             error: () => $('#attendance-empty').removeClass('hidden')
         });
+    }
+
+    let activeSessionIdForDetail = null;
+
+    function openDetailModal(sessionId) {
+        activeSessionIdForDetail = sessionId;
+        closeQRModal();
+        $('#modal-detail-attendance').removeClass('hidden').addClass('flex');
+        fetchAttendanceDetail(sessionId);
+    }
+
+    function fetchAttendanceDetail(sessionId) {
+        const tableBody = $('#detail-attendance-table-body');
+        tableBody.empty();
+        $('#detail-attendance-empty').addClass('hidden');
+
+        $.ajax({
+            url: `/api/attendance/session/${sessionId}/records`,
+            method: 'GET',
+            success: function(res) {
+                const s = res.session;
+                $('#detail-session-title').text(`Detail Kehadiran: ${s.title}`);
+                $('#detail-session-code').text(`Kode: ${s.code} | Batas Waktu: ${new Date(s.valid_until).toLocaleString('id-ID')}`);
+                
+                $('#btn-show-qr-from-detail').off('click').on('click', function() {
+                    closeDetailModal();
+                    openQRModal(sessionId);
+                });
+
+                const data = res.data || [];
+                const presentCount = data.filter(st => st.status === 'Hadir').length;
+                const absentCount = data.filter(st => st.status !== 'Hadir').length;
+
+                $('#detail-count-present').text(presentCount);
+                $('#detail-count-absent').text(absentCount);
+                $('#detail-count-total').text(data.length);
+
+                if (data.length === 0) {
+                    $('#detail-attendance-empty').removeClass('hidden');
+                    return;
+                }
+
+                data.forEach((st, index) => {
+                    const statusBadge = st.status === 'Hadir'
+                        ? `<span class="px-2 py-0.5 bg-emerald-50 text-emerald-600 rounded-md text-[10px] font-black uppercase">Hadir</span>`
+                        : `<span class="px-2 py-0.5 bg-red-50 text-red-500 rounded-md text-[10px] font-black uppercase">Tidak Hadir</span>`;
+
+                    const timeStr = st.scanned_at ? st.scanned_at : '—';
+                    const avatar = st.profile ? `/storage/${st.profile}` : '/user.png';
+
+                    tableBody.append(`
+                        <tr>
+                            <td class="px-6 py-4 text-center text-slate-400">${index + 1}</td>
+                            <td class="px-6 py-4 flex items-center gap-2">
+                                <img src="${avatar}" class="w-6 h-6 rounded-full object-cover border" onerror="this.onerror=null; this.src='/user.png';">
+                                <span class="text-slate-900">${st.name}</span>
+                            </td>
+                            <td class="px-6 py-4 font-mono text-slate-550">${st.email}</td>
+                            <td class="px-6 py-4 text-slate-500">${timeStr}</td>
+                            <td class="px-6 py-4 text-center">${statusBadge}</td>
+                        </tr>
+                    `);
+                });
+            }
+        });
+    }
+
+    function closeDetailModal() {
+        $('#modal-detail-attendance').removeClass('flex').addClass('hidden');
+        activeSessionIdForDetail = null;
     }
 
     // Submit handler for creating new attendance session
