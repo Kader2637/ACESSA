@@ -423,7 +423,12 @@
         
         ZoomMtgEmbedded.createClient().init({
             zoomAppRoot: meetingSDKElement,
-            language: 'en-US'
+            language: 'en-US',
+            customize: {
+                video: {
+                    defaultViewType: 'gallery'
+                }
+            }
         }).then((client) => {
             client.join({
                 sdkKey: zoomSdkKey,

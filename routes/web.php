@@ -19,7 +19,7 @@ Route::get('/zoom-session', function (\Illuminate\Http\Request $request) {
         }
     }
     return view('pages.zoom.meeting', compact('meetingDbId'));
-})->middleware('auth')->name('zoom.session');
+})->middleware(['auth', 'coi'])->name('zoom.session');
 
 Route::get('/login-as-teacher', function () {
     $user = \App\Models\User::first();

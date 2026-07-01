@@ -14,6 +14,9 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(CheckRole::class);
+        $middleware->alias([
+            'coi' => \App\Http\Middleware\CrossOriginIsolation::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

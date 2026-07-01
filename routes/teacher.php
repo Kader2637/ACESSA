@@ -57,5 +57,5 @@ Route::prefix('teacher')->middleware(['auth', CheckRole::class . ':teacher'])->g
 // ── Public teacher course routes ─────────────────────────
 Route::middleware(['auth', CheckRole::class . ':teacher'])->group(function () {
     Route::get('/teacher/classroom/course/{id}', [CourseTeacherController::class, 'show']);
-    Route::get('/teacher/course/detail/{id}', [CourseTeacherController::class, 'showPage']);
+    Route::get('/teacher/course/detail/{id}', [CourseTeacherController::class, 'showPage'])->middleware('coi');
 });

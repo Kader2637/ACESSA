@@ -677,6 +677,7 @@
                         customize: {
                             video: {
                                 isResizable: false,
+                                defaultViewType: 'gallery',
                                 viewSizes: {
                                     default: { width: w, height: sdkH },
                                     ribbon:  { width: 320, height: sdkH }

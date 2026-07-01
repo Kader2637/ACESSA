@@ -30,5 +30,5 @@ Route::middleware(['auth',CheckRole::class . ':student'])->group(function () {
         return view('pages.student.join_classroom.index');
     })->name('join.classroom');
     Route::get('/student/classroom/course/{id}', [StudentCourseController::class, 'show']);
-    Route::get('/student/course/detail/{id}', [StudentCourseController::class, 'showPage']);
+    Route::get('/student/course/detail/{id}', [StudentCourseController::class, 'showPage'])->middleware('coi');
 });
