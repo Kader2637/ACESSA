@@ -38,7 +38,7 @@ class AttendanceController extends Controller
             'title' => $request->title,
             'code' => $code,
             'token' => $token,
-            'valid_until' => Carbon::now()->addMinutes($request->duration),
+            'valid_until' => Carbon::now()->addMinutes((int) $request->duration),
         ]);
 
         return response()->json([
