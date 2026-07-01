@@ -233,6 +233,132 @@
     </div>
 </div>
 
+{{-- MODAL QR ABSENSI --}}
+<div id="modal-qr-attendance" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-950/80 backdrop-blur-md overflow-y-auto p-4 md:p-6">
+    <div class="bg-white rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden border border-slate-100 flex flex-col md:flex-row h-full max-h-[85vh] animate-scale-in text-left">
+        
+        {{-- Left Side: QR Code, Short Code, Countdown Timer --}}
+        <div class="flex-1 p-6 md:p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-100 bg-slate-50/50">
+            <span class="px-3 py-1 bg-indigo-50 border border-indigo-100 text-indigo-650 text-[10px] font-black uppercase tracking-wider rounded-lg mb-2">SCAN BARCODE UNTUK ABSEN</span>
+            <h4 id="qr-session-title" class="text-lg font-black text-slate-900 mb-6 text-center">Judul Sesi Absensi</h4>
+            
+            {{-- QR Frame --}}
+            <div class="w-56 h-56 md:w-64 md:h-64 bg-white rounded-3xl p-4 shadow-lg border border-slate-200/60 flex items-center justify-center relative mb-4">
+                <img id="attendance-qr-img" src="" class="w-full h-full object-contain" alt="QR Code Absensi">
+                <div id="qr-expired-overlay" class="absolute inset-0 bg-white/95 flex flex-col items-center justify-center text-center p-4 rounded-3xl hidden">
+                    <svg class="w-12 h-12 text-red-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="text-sm font-extrabold text-slate-800">Sesi Kedaluwarsa</span>
+                    <span class="text-[10px] text-slate-400 font-bold mt-1">Siswa tidak bisa lagi melakukan absen</span>
+                </div>
+            </div>
+
+            {{-- Short Code --}}
+            <div class="text-center mb-6">
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">KODE ABSENSI MANUAL</p>
+                <span id="qr-session-code" class="text-2xl font-mono font-black text-slate-950 tracking-widest bg-slate-200 px-4 py-1.5 rounded-xl border">ABCDEF</span>
+            </div>
+
+            {{-- Countdown Timer --}}
+            <div class="w-full max-w-xs bg-slate-900 rounded-2xl p-4 text-white text-center shadow-md">
+                <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1 leading-none">Sisa Waktu Validitas</p>
+                <div id="qr-countdown" class="text-2xl font-mono font-black text-yellow-400 leading-none">00:00</div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+                    <div id="qr-progress-bar" class="bg-indigo-500 h-full rounded-full transition-all duration-1000" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Right Side: Attendance Live List --}}
+        <div class="w-full md:w-[380px] p-6 flex flex-col h-full bg-white">
+            <div class="flex justify-between items-center mb-4 flex-shrink-0">
+                <div>
+                    <h4 class="font-extrabold text-slate-900 text-sm">Siswa Hadir</h4>
+                    <p class="text-[10px] text-slate-400 font-bold mt-0.5">Live update otomatis</p>
+                </div>
+                <span class="px-2.5 py-1 bg-slate-100 text-slate-800 font-extrabold text-xs rounded-lg" id="qr-attendee-count">0/0</span>
+            </div>
+            
+            {{-- Scanned Student List --}}
+            <div class="flex-grow overflow-y-auto min-h-[200px]" id="qr-student-list-container">
+                <div class="divide-y divide-slate-100" id="qr-student-list"></div>
+                <div id="qr-student-empty" class="h-full flex flex-col items-center justify-center text-center p-8">
+                    <div class="w-12 h-12 bg-slate-50 border rounded-2xl flex items-center justify-center animate-pulse mb-3">
+                        <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </div>
+                    <p class="text-xs font-bold text-slate-800">Menunggu Kehadiran</p>
+                    <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">Minta siswa untuk memindai kode QR atau memasukkan kode manual.</p>
+                </div>
+            </div>
+
+            {{-- Close Button --}}
+            <div class="pt-4 border-t border-slate-100 flex-shrink-0 mt-4">
+                <button onclick="closeQRModal()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all">
+                    Tutup Layar Absensi
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{{-- MODAL DETAIL KEHADIRAN --}}
+<div id="modal-detail-attendance" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-950/80 backdrop-blur-md overflow-y-auto p-4 md:p-6">
+    <div class="bg-white rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden border border-slate-100 flex flex-col h-full max-h-[80vh] animate-scale-in text-left">
+        
+        {{-- Header --}}
+        <div class="px-6 py-5 border-b border-slate-100 flex justify-between items-center bg-slate-50/50 flex-shrink-0">
+            <div>
+                <h4 class="font-extrabold text-slate-900 text-base" id="detail-session-title">Detail Kehadiran</h4>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mt-0.5" id="detail-session-code"></p>
+            </div>
+            <button onclick="closeDetailModal()" class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 hover:bg-slate-200">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+            </button>
+        </div>
+
+        {{-- Stats & Quick QR Action --}}
+        <div class="p-6 bg-indigo-50 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 flex-shrink-0">
+            <div class="flex gap-6 text-xs font-bold text-slate-600">
+                <div>Hadir: <span id="detail-count-present" class="text-emerald-600 font-black text-sm">0</span></div>
+                <div class="w-px h-4 bg-slate-200"></div>
+                <div>Tidak Hadir: <span id="detail-count-absent" class="text-red-500 font-black text-sm">0</span></div>
+                <div class="w-px h-4 bg-slate-200"></div>
+                <div>Total Siswa: <span id="detail-count-total" class="text-slate-900 font-black text-sm">0</span></div>
+            </div>
+            <button id="btn-show-qr-from-detail" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase text-[10px] tracking-widest rounded-xl transition-all shadow-sm flex items-center gap-1.5">
+                ⚡ Tampilkan QR
+            </button>
+        </div>
+
+        {{-- Table --}}
+        <div class="flex-grow overflow-y-auto p-6">
+            <table class="w-full text-left text-xs">
+                <thead class="bg-slate-50 border-b border-slate-100 text-slate-400 font-bold uppercase tracking-wider">
+                    <tr>
+                        <th class="px-6 py-3 w-16 text-center">No</th>
+                        <th class="px-6 py-3">Nama Lengkap</th>
+                        <th class="px-6 py-3">Email</th>
+                        <th class="px-6 py-3">Waktu Absen</th>
+                        <th class="px-6 py-3 text-center">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="detail-attendance-table-body" class="divide-y divide-slate-50 text-slate-700 font-semibold"></tbody>
+            </table>
+            <div id="detail-attendance-empty" class="py-12 text-center text-slate-400 text-xs font-semibold hidden">
+                Belum ada siswa terdaftar di kelas ini.
+            </div>
+        </div>
+
+        {{-- Footer --}}
+        <div class="p-6 border-t border-slate-100 flex-shrink-0 bg-slate-50/50 flex justify-end">
+            <button onclick="closeDetailModal()" class="px-6 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl transition-all">
+                Tutup
+            </button>
+        </div>
+
+    </div>
+</div>
+
 @endsection
 
 @section('script')
@@ -645,74 +771,6 @@
         setInterval(ambilPesan, 3000);
     });
 </script>
-
-{{-- MODAL QR ABSENSI --}}
-<div id="modal-qr-attendance" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-950/80 backdrop-blur-md overflow-y-auto p-4 md:p-6">
-    <div class="bg-white rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden border border-slate-100 flex flex-col md:flex-row h-full max-h-[85vh] animate-scale-in text-left">
-        
-        {{-- Left Side: QR Code, Short Code, Countdown Timer --}}
-        <div class="flex-1 p-6 md:p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-100 bg-slate-50/50">
-            <span class="px-3 py-1 bg-indigo-50 border border-indigo-100 text-indigo-600 text-[10px] font-black uppercase tracking-wider rounded-lg mb-2">SCAN BARCODE UNTUK ABSEN</span>
-            <h4 id="qr-session-title" class="text-lg font-black text-slate-900 mb-6 text-center">Judul Sesi Absensi</h4>
-            
-            {{-- QR Frame --}}
-            <div class="w-56 h-56 md:w-64 md:h-64 bg-white rounded-3xl p-4 shadow-lg border border-slate-200/60 flex items-center justify-center relative mb-4">
-                <img id="attendance-qr-img" src="" class="w-full h-full object-contain" alt="QR Code Absensi">
-                <div id="qr-expired-overlay" class="absolute inset-0 bg-white/95 flex flex-col items-center justify-center text-center p-4 rounded-3xl hidden">
-                    <svg class="w-12 h-12 text-red-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
-                    <span class="text-sm font-extrabold text-slate-800">Sesi Kedaluwarsa</span>
-                    <span class="text-[10px] text-slate-400 font-bold mt-1">Siswa tidak bisa lagi melakukan absen</span>
-                </div>
-            </div>
-
-            {{-- Short Code --}}
-            <div class="text-center mb-6">
-                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">KODE ABSENSI MANUAL</p>
-                <span id="qr-session-code" class="text-2xl font-mono font-black text-slate-950 tracking-widest bg-slate-200 px-4 py-1.5 rounded-xl border">ABCDEF</span>
-            </div>
-
-            {{-- Countdown Timer --}}
-            <div class="w-full max-w-xs bg-slate-900 rounded-2xl p-4 text-white text-center shadow-md">
-                <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1 leading-none">Sisa Waktu Validitas</p>
-                <div id="qr-countdown" class="text-2xl font-mono font-black text-yellow-400 leading-none">00:00</div>
-                <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
-                    <div id="qr-progress-bar" class="bg-indigo-500 h-full rounded-full transition-all duration-1000" style="width: 100%"></div>
-                </div>
-            </div>
-        </div>
-
-        {{-- Right Side: Attendance Live List --}}
-        <div class="w-full md:w-[380px] p-6 flex flex-col h-full bg-white">
-            <div class="flex justify-between items-center mb-4 flex-shrink-0">
-                <div>
-                    <h4 class="font-extrabold text-slate-900 text-sm">Siswa Hadir</h4>
-                    <p class="text-[10px] text-slate-400 font-bold mt-0.5">Live update otomatis</p>
-                </div>
-                <span class="px-2.5 py-1 bg-slate-100 text-slate-800 font-extrabold text-xs rounded-lg" id="qr-attendee-count">0/0</span>
-            </div>
-            
-            {{-- Scanned Student List --}}
-            <div class="flex-grow overflow-y-auto min-h-[200px]" id="qr-student-list-container">
-                <div class="divide-y divide-slate-100" id="qr-student-list"></div>
-                <div id="qr-student-empty" class="h-full flex flex-col items-center justify-center text-center p-8">
-                    <div class="w-12 h-12 bg-slate-50 border rounded-2xl flex items-center justify-center animate-pulse mb-3">
-                        <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
-                    </div>
-                    <p class="text-xs font-bold text-slate-800">Menunggu Kehadiran</p>
-                    <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">Minta siswa untuk memindai kode QR atau memasukkan kode manual.</p>
-                </div>
-            </div>
-
-            {{-- Close Button --}}
-            <div class="pt-4 border-t border-slate-100 flex-shrink-0 mt-4">
-                <button onclick="closeQRModal()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all">
-                    Tutup Layar Absensi
-                </button>
-            </div>
-        </div>
-
-    </div>
-</div>
 
 @include('pages.teacher.course.ajaxCourseindex')
 @endsection
