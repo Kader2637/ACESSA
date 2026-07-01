@@ -235,7 +235,7 @@
 
 {{-- MODAL QR ABSENSI --}}
 <div id="modal-qr-attendance" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-950/80 backdrop-blur-md overflow-y-auto p-4 md:p-6">
-    <div class="bg-white rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden border border-slate-100 flex flex-col md:flex-row h-full max-h-[85vh] animate-scale-in text-left">
+    <div class="bg-white rounded-3xl w-full max-w-5xl shadow-2xl overflow-hidden border border-slate-100 flex flex-col md:flex-row h-full max-h-[85vh] animate-scale-in text-left">
         
         {{-- Left Side: QR Code, Short Code, Countdown Timer --}}
         <div class="flex-1 p-6 md:p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-100 bg-slate-50/50">
@@ -243,7 +243,7 @@
             <h4 id="qr-session-title" class="text-lg font-black text-slate-900 mb-6 text-center">Judul Sesi Absensi</h4>
             
             {{-- QR Frame --}}
-            <div class="w-56 h-56 md:w-64 md:h-64 bg-white rounded-3xl p-4 shadow-lg border border-slate-200/60 flex items-center justify-center relative mb-4">
+            <div class="w-[280px] h-[280px] sm:w-[320px] sm:h-[320px] md:w-[400px] md:h-[400px] bg-white rounded-3xl p-6 shadow-lg border border-slate-200/60 flex items-center justify-center relative mb-4">
                 <img id="attendance-qr-img" src="" class="w-full h-full object-contain" alt="QR Code Absensi">
                 <div id="qr-expired-overlay" class="absolute inset-0 bg-white/95 flex flex-col items-center justify-center text-center p-4 rounded-3xl hidden">
                     <svg class="w-12 h-12 text-red-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>

@@ -570,7 +570,7 @@
                 $('#qr-session-code').text(s.code);
                 
                 const scanUrl = window.location.origin + `/attendance/scan/${s.token}`;
-                const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(scanUrl)}`;
+                const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${encodeURIComponent(scanUrl)}`;
                 $('#attendance-qr-img').attr('src', qrApiUrl);
 
                 if (s.is_expired) {
