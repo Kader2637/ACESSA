@@ -136,5 +136,6 @@ Route::get('/classroom/{classId}/attendance/sessions', [App\Http\Controllers\Api
 Route::get('/attendance/session/{sessionId}/records', [App\Http\Controllers\Api\AttendanceController::class, 'getSessionDetails']);
 Route::post('/attendance/session/{sessionId}/extend', [App\Http\Controllers\Api\AttendanceController::class, 'extendSession']);
 Route::post('/attendance/code', [App\Http\Controllers\Api\AttendanceController::class, 'submitByCode']);
+Route::post('/attendance/token', [App\Http\Controllers\Api\AttendanceController::class, 'submitByToken']);
 Route::get('/classroom/{classId}/attendance/my', [App\Http\Controllers\Api\AttendanceController::class, 'getStudentAttendance']);
 

@@ -307,4 +307,64 @@ class AttendanceController extends Controller
             'session' => $session
         ]);
     }
+
+    public function submitByToken(Request $request)
+    {
+        $request->validate([
+            'token' => 'required|string',
+        ]);
+
+        $student = Auth::user();
+        $session = AttendanceSession::with('classroom')->where('token', $request->token)->first();
+
+        if (!$session) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Tautan atau QR Code absensi tidak valid.'
+            ], 404);
+        }
+
+        $classroom = $session->classroom;
+
+        if ($session->isExpired()) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Batas waktu absensi sesi ini telah kedaluwarsa.'
+            ], 403);
+        }
+
+        $isEnrolled = StudentClassroomRelation::where('classroom_id', $classroom->id)
+            ->where('user_id', $student->id)
+            ->where('status', 'accept')
+            ->exists();
+
+        if (!$isEnrolled) {
+            return response()->json([
+                'status' => 'error',
+                'message' => 'Anda tidak terdaftar aktif di kelas ini.'
+            ], 403);
+        }
+
+        $alreadyRecorded = AttendanceRecord::where('attendance_session_id', $session->id)
+            ->where('user_id', $student->id)
+            ->exists();
+
+        if ($alreadyRecorded) {
+            return response()->json([
+                'status' => 'warning',
+                'message' => 'Anda sudah mengisi absensi untuk sesi ini sebelumnya.'
+            ]);
+        }
+
+        AttendanceRecord::create([
+            'attendance_session_id' => $session->id,
+            'user_id' => $student->id,
+            'scanned_at' => Carbon::now(),
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Absensi Anda untuk sesi "' . $session->title . '" berhasil dicatat!'
+        ]);
+    }
 }

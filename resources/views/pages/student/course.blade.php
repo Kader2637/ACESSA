@@ -101,18 +101,44 @@
         <div id="content-absensi" class="tab-content hidden">
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 text-left animate-fade-in">
                 
-                {{-- Form Input Kode --}}
-                <div class="lg:col-span-1 bg-white border border-slate-200 p-6 rounded-3xl h-fit shadow-sm">
-                    <h3 class="font-extrabold text-slate-900 text-sm mb-2">Input Kode Absensi</h3>
-                    <p class="text-[10px] text-slate-400 font-bold mb-4 uppercase tracking-wider">Masukkan kode 6 digit dari Dosen</p>
-                    <form id="form-submit-attendance-code" class="space-y-4">
-                        <div>
-                            <input type="text" id="attendance-code-input" class="w-full px-4 py-3 text-lg font-mono font-black text-center tracking-widest bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:border-indigo-600 outline-none uppercase" maxlength="6" placeholder="------" required>
+                {{-- Form Input Absensi & Scan --}}
+                <div class="lg:col-span-1 bg-white border border-slate-200 p-6 rounded-3xl h-fit shadow-sm text-left">
+                    <h3 class="font-extrabold text-slate-900 text-sm mb-4">Pengisian Kehadiran</h3>
+                    
+                    {{-- Tab Switcher --}}
+                    <div class="flex border-b border-slate-100 mb-6 gap-4 text-xs font-bold text-slate-400">
+                        <button type="button" onclick="switchAttendanceMode('manual')" id="btn-mode-manual" class="pb-2 border-b-2 border-indigo-600 text-indigo-600">Manual</button>
+                        <button type="button" onclick="switchAttendanceMode('scan')" id="btn-mode-scan" class="pb-2 border-b-2 border-transparent">Scan QR Code</button>
+                    </div>
+
+                    {{-- Manual Mode --}}
+                    <div id="mode-manual-container" class="space-y-4">
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">Masukkan kode 6 digit dari Dosen</p>
+                        <form id="form-submit-attendance-code" class="space-y-4">
+                            <div>
+                                <input type="text" id="attendance-code-input" class="w-full px-4 py-3 text-lg font-mono font-black text-center tracking-widest bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:border-indigo-600 outline-none uppercase" maxlength="6" placeholder="------" required>
+                            </div>
+                            <button type="submit" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]">
+                                ⚡ Kirim Kehadiran
+                            </button>
+                        </form>
+                    </div>
+
+                    {{-- Scan Mode --}}
+                    <div id="mode-scan-container" class="space-y-4 hidden">
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-wider mb-2">Pindai kode QR absensi dari kamera</p>
+                        <div class="flex flex-col gap-3">
+                            <button type="button" id="btn-start-scanner" onclick="startScanner()" class="w-full py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]">
+                                📷 Buka Kamera & Scan
+                            </button>
+                            <button type="button" id="btn-stop-scanner" onclick="stopScanner()" class="w-full py-2.5 bg-red-550 text-red-600 hover:bg-red-100 font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-[0.98] hidden">
+                                🛑 Matikan Kamera
+                            </button>
                         </div>
-                        <button type="submit" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]">
-                            ⚡ Kirim Kehadiran
-                        </button>
-                    </form>
+                        <div id="reader-container" class="w-full rounded-2xl overflow-hidden border border-slate-100 bg-slate-50 relative aspect-square flex items-center justify-center hidden mt-4">
+                            <div id="reader" class="w-full h-full"></div>
+                        </div>
+                    </div>
                 </div>
 
                 {{-- Riwayat Kehadiran --}}
@@ -373,9 +399,93 @@
         });
     });
 
+    let html5QrcodeScanner = null;
+
+    window.switchAttendanceMode = function(mode) {
+        if (mode === 'manual') {
+            stopScanner();
+            $('#btn-mode-manual').addClass('border-indigo-600 text-indigo-600').removeClass('border-transparent text-slate-400');
+            $('#btn-mode-scan').removeClass('border-indigo-600 text-indigo-600').addClass('border-transparent text-slate-400');
+            $('#mode-manual-container').removeClass('hidden');
+            $('#mode-scan-container').addClass('hidden');
+        } else {
+            $('#btn-mode-scan').addClass('border-indigo-600 text-indigo-600').removeClass('border-transparent text-slate-400');
+            $('#btn-mode-manual').removeClass('border-indigo-600 text-indigo-600').addClass('border-transparent text-slate-400');
+            $('#mode-scan-container').removeClass('hidden');
+            $('#mode-manual-container').addClass('hidden');
+        }
+    }
+
+    window.startScanner = function() {
+        $('#reader-container').removeClass('hidden');
+        $('#btn-start-scanner').addClass('hidden');
+        $('#btn-stop-scanner').removeClass('hidden');
+
+        if (typeof Html5Qrcode === 'undefined') {
+            toastr.error("Pustaka Scanner sedang dimuat, silakan tunggu sesaat.");
+            return;
+        }
+
+        html5QrcodeScanner = new Html5Qrcode("reader");
+        const qrCodeSuccessCallback = (decodedText, decodedResult) => {
+            stopScanner();
+
+            let token = decodedText;
+            if (decodedText.includes('/attendance/scan/')) {
+                const parts = decodedText.split('/attendance/scan/');
+                token = parts[parts.length - 1];
+            }
+
+            $.ajax({
+                url: '/api/attendance/token',
+                method: 'POST',
+                data: {
+                    token: token,
+                    _token: '{{ csrf_token() }}'
+                },
+                success: function(res) {
+                    toastr.success(res.message);
+                    ambilDataAbsensi();
+                    switchAttendanceMode('manual');
+                },
+                error: function(xhr) {
+                    const msg = xhr.responseJSON ? xhr.responseJSON.message : 'Gagal mencatat absensi via QR.';
+                    toastr.error(msg);
+                }
+            });
+        };
+
+        const config = { fps: 10, qrbox: { width: 250, height: 250 } };
+        html5QrcodeScanner.start({ facingMode: "environment" }, config, qrCodeSuccessCallback)
+            .catch(err => {
+                toastr.error("Kamera gagal diakses: " + err);
+                stopScanner();
+            });
+    }
+
+    window.stopScanner = function() {
+        $('#reader-container').addClass('hidden');
+        $('#btn-start-scanner').removeClass('hidden');
+        $('#btn-stop-scanner').addClass('hidden');
+
+        if (html5QrcodeScanner) {
+            html5QrcodeScanner.stop().then(() => {
+                html5QrcodeScanner = null;
+            }).catch(err => {
+                console.error("Gagal menghentikan scanner: " + err);
+                html5QrcodeScanner = null;
+            });
+        }
+    }
+
     $(document).ready(function() {
         ambilDataKelas();
         setInterval(ambilPesan, 3000);
+
+        // Dynamically load html5-qrcode library
+        $.getScript("https://unpkg.com/html5-qrcode", function() {
+            console.log("html5-qrcode loaded successfully");
+        });
     });
 </script>
 @endsection
