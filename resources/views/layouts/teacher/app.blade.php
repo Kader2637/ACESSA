@@ -692,6 +692,17 @@
             complete: () => btn.prop('disabled', false).text('Jadwalkan Sesi')
         });
     });
+
+    window.toggleProfileDropdown = function() {
+        $('#profile-dropdown').toggleClass('hidden flex flex-col');
+    };
+
+    $(document).on('click', function(e) {
+        // Close profile dropdown if clicked outside
+        if (!$(e.target).closest('#profile-dropdown').length && !$(e.target).closest('button[onclick="toggleProfileDropdown()"]').length) {
+            $('#profile-dropdown').addClass('hidden').removeClass('flex flex-col');
+        }
+    });
 </script>
 @yield('script')
 </body>

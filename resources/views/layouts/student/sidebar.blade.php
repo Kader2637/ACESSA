@@ -1,4 +1,4 @@
-<aside class="fixed top-0 left-0 h-screen w-64 bg-slate-900 text-slate-350 flex flex-col z-[1000] border-r border-slate-800 transition-transform duration-300 transform lg:translate-x-0 -translate-x-full">
+<aside id="student-sidebar" class="fixed top-0 left-0 h-screen w-64 bg-slate-900 text-slate-350 flex flex-col z-[1000] border-r border-slate-800 transition-transform duration-300 transform lg:translate-x-0 -translate-x-full">
     {{-- Brand Logo (Yellow/Gold Campus Theme) --}}
     <div class="px-6 py-6 flex items-center gap-3 flex-shrink-0 border-b border-slate-800">
         <a href="/student/dashboard" class="flex items-center gap-2.5 group">

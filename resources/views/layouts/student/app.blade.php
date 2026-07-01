@@ -47,6 +47,7 @@
         
         @if (!request()->is('student/materi/detail'))
             @include('layouts.student.sidebar')
+            <div id="sidebar-overlay" class="fixed inset-0 z-[990] bg-slate-950/60 backdrop-blur-sm hidden lg:hidden" onclick="toggleSidebar()"></div>
         @endif
 
         <div class="flex-grow flex flex-col min-w-0 h-full lg:pl-64 transition-all duration-300">
@@ -64,6 +65,29 @@
     <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script>
+        window.toggleSidebar = function() {
+            const sidebar = $('#student-sidebar');
+            const overlay = $('#sidebar-overlay');
+            if (sidebar.hasClass('-translate-x-full')) {
+                sidebar.removeClass('-translate-x-full').addClass('translate-x-0');
+                overlay.removeClass('hidden');
+            } else {
+                sidebar.addClass('-translate-x-full').removeClass('translate-x-0');
+                overlay.addClass('hidden');
+            }
+        };
+
+        window.toggleProfileDropdown = function() {
+            $('#profile-dropdown').toggleClass('hidden flex flex-col');
+        };
+
+        $(document).on('click', function(e) {
+            // Close profile dropdown if clicked outside
+            if (!$(e.target).closest('#profile-dropdown').length && !$(e.target).closest('button[onclick="toggleProfileDropdown()"]').length) {
+                $('#profile-dropdown').addClass('hidden').removeClass('flex flex-col');
+            }
+        });
+
         $(document).ready(function () {
             AOS.init({ once: true, duration: 800 });
             feather.replace();
