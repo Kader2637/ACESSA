@@ -696,6 +696,14 @@
             success: function(res) {
                 $('#zoom-loading-message').hide();
                 if (res.success && res.data.length > 0) {
+                    res.data.sort((a, b) => {
+                        const aEnded = a.status === 'ended';
+                        const bEnded = b.status === 'ended';
+                        if (aEnded !== bEnded) {
+                            return aEnded ? 1 : -1;
+                        }
+                        return new Date(a.meeting_time) - new Date(b.meeting_time);
+                    });
                     res.data.forEach(meet => {
                         const dateStr = new Date(meet.meeting_time).toLocaleString('id-ID', {
                             dateStyle: 'medium',
