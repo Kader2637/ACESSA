@@ -174,11 +174,11 @@
                         container.html('<div class="col-span-full py-16 text-center bg-white rounded-2xl border border-dashed border-slate-200"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Antrean bersih, tidak ada kelas tertunda.</p></div>');
                     } else {
                         res.data.forEach(item => {
-                            const thumb = item.thumbnail ? `/storage/${item.thumbnail}` : '/user.png';
+                            const thumb = item.thumbnail ? `/storage/${item.thumbnail}` : '/classaccesa.png';
                             container.append(`
                                 <div class="course-card group animate-fade-in text-left">
                                     <div class="thumb-container">
-                                        <img src="${thumb}" class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300" onerror="this.src='/user.png'">
+                                        <img src="${thumb}" class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300" onerror="this.src='/classaccesa.png'">
                                         <span class="absolute top-3 right-3 px-2 py-1 bg-amber-500 text-white font-bold text-[8px] uppercase tracking-wider rounded-lg shadow-sm">Menunggu</span>
                                     </div>
                                     <h3 class="text-sm font-extrabold text-slate-900 mb-1 truncate leading-tight">${item.name}</h3>

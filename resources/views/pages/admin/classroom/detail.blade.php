@@ -20,14 +20,14 @@
     
     {{-- Header Banner (Flat Overlay, No Gradients) --}}
     <div class="relative h-[280px] rounded-3xl overflow-hidden shadow-sm border border-slate-200" data-aos="fade-down">
-        <img id="class-thumbnail" class="w-full h-full object-cover" src="">
+        <img id="class-thumbnail" class="w-full h-full object-cover" src="" onerror="this.onerror=null; this.src='/classaccesa.png';">
         <div class="absolute inset-0 banner-overlay"></div>
         <div class="absolute bottom-6 left-6 right-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
                 <span class="px-2.5 py-1 bg-white border border-slate-200 text-indigo-650 font-bold text-[9px] uppercase tracking-wider rounded-lg mb-2 inline-block shadow-sm">Status Audit</span>
                 <h2 id="title" class="text-2xl md:text-3xl font-extrabold text-white tracking-tight leading-tight truncate"></h2>
                 <div class="flex items-center gap-2.5 mt-2">
-                    <img id="profileUser" class="w-6 h-6 rounded-md border border-white/20 object-cover shrink-0" src="">
+                    <img id="profileUser" class="w-6 h-6 rounded-md border border-white/20 object-cover shrink-0" src="" onerror="this.onerror=null; this.src='/user.png';">
                     <p class="text-slate-300 font-semibold text-xs truncate">Dosen Pengampu: <span id="nameTeacher" class="text-white"></span></p>
                 </div>
             </div>
@@ -151,7 +151,7 @@
                     const data = res.data;
                     $('#title').text(data.name);
                     $('#description_classroom').text(data.description);
-                    $('#class-thumbnail').attr('src', `/storage/${data.thumbnail}`);
+                    $('#class-thumbnail').attr('src', data.thumbnail ? `/storage/${data.thumbnail}` : '/classaccesa.png');
                     $('#profileUser').attr('src', data.user.profile ? `/storage/${data.user.profile}` : '/user.png');
                     $('#nameTeacher').text(data.user.name);
                     ambilDataMateri();

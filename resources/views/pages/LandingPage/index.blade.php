@@ -656,7 +656,7 @@
             sliceData.forEach(c => {
                 const thumb = c.thumbnail
                     ? `/storage/${c.thumbnail}`
-                    : `https://images.unsplash.com/photo-1555066931-4365d14bab8c?q=80&w=700&auto=format&fit=crop`;
+                    : '/classaccesa.png';
 
                 const desc = c.description
                     ? (c.description.length > 90 ? c.description.substring(0, 90) + '…' : c.description)

@@ -121,14 +121,14 @@
                         const course = relation.course;
                         const user = relation.user;
 
-                        const courseThumbnail = course.thumbnail ? `/storage/${course.thumbnail}` : '/user.png';
+                        const courseThumbnail = course.thumbnail ? `/storage/${course.thumbnail}` : '/classaccesa.png';
                         const authorImage = user.profile ? `/storage/${user.profile}` : '/user.png';
                         const desc = course.description.length > 60 ? course.description.substring(0, 60) + '...' : course.description;
 
                         const html = `
                             <div class="course-card group text-left">
                                 <div class="image-container relative mb-4">
-                                    <img src="${courseThumbnail}" class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300" onerror="this.onerror=null; this.src='/user.png';">
+                                    <img src="${courseThumbnail}" class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300" onerror="this.onerror=null; this.src='/classaccesa.png';">
                                     <div class="absolute top-3 left-3">
                                         <span class="px-2.5 py-1 bg-white border border-slate-200 text-yellow-650 font-bold text-[8px] uppercase tracking-wider rounded-lg shadow-sm">
                                             ${course.statusClass || 'Aktif'}

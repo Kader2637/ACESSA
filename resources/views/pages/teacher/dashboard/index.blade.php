@@ -203,14 +203,14 @@
 
                 if (data.length > 0) {
                     data.forEach((kelas) => {
-                        const thumb = kelas.thumbnail ? `{{ asset('storage') }}/${kelas.thumbnail}` : '/user.png';
+                        const thumb = kelas.thumbnail ? `{{ asset('storage') }}/${kelas.thumbnail}` : '/classaccesa.png';
                         const desc = kelas.description.length > 85 ? kelas.description.substring(0, 85) + '...' : kelas.description;
                         const students = kelas.student_count || 0;
 
                         $('#data-teacher').append(`
                             <div class="course-card bg-white border border-slate-200/60 rounded-3xl overflow-hidden flex flex-col h-full shadow-sm">
                                 <div class="relative aspect-[16/10] overflow-hidden bg-slate-900">
-                                    <img src="${thumb}" class="w-full h-full object-cover opacity-80" onerror="this.onerror=null; this.src='/user.png'">
+                                    <img src="${thumb}" class="w-full h-full object-cover opacity-80" onerror="this.onerror=null; this.src='/classaccesa.png'">
                                     <div class="absolute top-4 left-4">
                                         <div class="flex items-center gap-1.5 px-2.5 py-1 bg-white/90 backdrop-blur-md rounded-lg shadow-sm border border-slate-100">
                                             <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>

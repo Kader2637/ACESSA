@@ -20,7 +20,7 @@
     
     {{-- Header Banner (Flat Overlay, No Gradients) --}}
     <div class="relative h-[240px] rounded-3xl overflow-hidden shadow-sm border border-slate-200" data-aos="fade-down">
-        <img id="class-thumbnail" class="w-full h-full object-cover" src="" onerror="this.onerror=null; this.src='/user.png';">
+        <img id="class-thumbnail" class="w-full h-full object-cover" src="" onerror="this.onerror=null; this.src='/classaccesa.png';">
         <div class="absolute inset-0 banner-overlay"></div>
         <div class="absolute bottom-6 left-6 right-6 flex flex-col sm:flex-row sm:items-end justify-between gap-4">
             <div>
@@ -121,7 +121,7 @@
                     const data = res.data;
                     $('#title').text(data.name);
                     $('#description_classroom').text(data.description);
-                    $('#class-thumbnail').attr('src', `{{ asset('storage') }}/${data.thumbnail}`);
+                    $('#class-thumbnail').attr('src', data.thumbnail ? `{{ asset('storage') }}/${data.thumbnail}` : '/classaccesa.png');
                     $('#nameTeacher, #nameTeacher-top').text(data.user.name);
                     $('#profile').attr('src', data.user.profile ? `/storage/${data.user.profile}` : '/user.png');
                     ambilDataMateri();

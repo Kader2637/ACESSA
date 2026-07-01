@@ -52,14 +52,14 @@
                     feather.replace();
                 } else {
                     $.each(classrooms, function(index, classroom) {
-                        const thumb = classroom.thumbnail ? `/storage/${classroom.thumbnail}` : '/user.png';
+                        const thumb = classroom.thumbnail ? `/storage/${classroom.thumbnail}` : '/classaccesa.png';
                         const userImg = classroom.user_image ? `/storage/${classroom.user_image}` : '/user.png';
                         const desc = classroom.description.length > 80 ? classroom.description.substring(0, 80) + '...' : classroom.description;
 
                         list.append(`
                             <div class="classroom-card group">
                                 <div class="image-container relative mb-4">
-                                    <img src="${thumb}" class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300" onerror="this.onerror=null; this.src='/user.png';">
+                                    <img src="${thumb}" class="w-full h-full object-cover group-hover:scale-102 transition-transform duration-300" onerror="this.onerror=null; this.src='/classaccesa.png';">
                                     <div class="absolute top-3 left-3">
                                         <span class="px-2.5 py-1 bg-white border border-slate-200 text-indigo-600 font-bold text-[8px] uppercase tracking-wider rounded-lg shadow-sm">Katalog</span>
                                     </div>
