@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>ACESSA - Halaman Tidak Ditemukan (404)</title>
+    <title>ACESSA - Halaman Kedaluwarsa (419)</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -20,16 +20,16 @@
     <div class="relative z-10 max-w-md w-full bg-white border border-slate-100 rounded-[3rem] p-10 md:p-12 shadow-2xl shadow-indigo-100/40 text-center animate-fade-in">
         <div class="mb-8">
             <span class="text-8xl md:text-9xl font-black tracking-tighter text-transparent bg-clip-text bg-gradient-to-br from-indigo-655 to-violet-600">
-                404
+                419
             </span>
         </div>
         
         <h1 class="text-2xl font-black text-slate-900 mb-3 tracking-tight">
-            Halaman Tidak Ditemukan
+            Halaman Kedaluwarsa
         </h1>
         
         <p class="text-slate-500 text-sm font-semibold leading-relaxed mb-10">
-            Sepertinya Anda telah salah mengetik alamat atau halaman tersebut mungkin telah dipindahkan ke lokasi lain.
+            Sesi Anda telah berakhir karena tidak ada aktivitas untuk beberapa waktu. Silakan segarkan halaman dan coba lagi.
         </p>
         
         <div class="flex flex-col gap-3">

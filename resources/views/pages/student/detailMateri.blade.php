@@ -67,6 +67,19 @@
         </div>
     </div>
 
+    <!-- Filter Buttons -->
+    <div class="flex items-center gap-2.5 mb-8">
+        <button onclick="setZoomFilter('all')" id="filter-zoom-all" class="px-5 py-2.5 bg-indigo-650 text-white font-bold text-xs rounded-xl transition-all shadow-sm">
+            Semua
+        </button>
+        <button onclick="setZoomFilter('active')" id="filter-zoom-active" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-650 font-bold text-xs rounded-xl hover:bg-slate-50 transition-all">
+            Aktif / Terjadwal
+        </button>
+        <button onclick="setZoomFilter('ended')" id="filter-zoom-ended" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-650 font-bold text-xs rounded-xl hover:bg-slate-50 transition-all">
+            Selesai
+        </button>
+    </div>
+
     <div id="zoom-loading-message" class="py-20 text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest animate-pulse">Memuat jadwal pertemuan...</div>
     <div id="zoom-meetings-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
 </div>
@@ -635,6 +648,44 @@
     }
 
     // ZOOM HISTORY TABS FUNCTIONS FOR STUDENT
+    let currentZoomFilter = 'all';
+
+    function setZoomFilter(filter) {
+        currentZoomFilter = filter;
+        $('[id^="filter-zoom-"]').removeClass('bg-indigo-650 text-white shadow-sm').addClass('bg-white border border-slate-200 text-slate-650 hover:bg-slate-50');
+        $(`#filter-zoom-${filter}`).addClass('bg-indigo-650 text-white shadow-sm').removeClass('bg-white border border-slate-200 text-slate-650 hover:bg-slate-50');
+        applyZoomFilter();
+    }
+
+    function applyZoomFilter() {
+        const cards = $('.zoom-meeting-card');
+        let visibleCount = 0;
+        
+        cards.each(function() {
+            const cardStatus = $(this).data('status');
+            if (currentZoomFilter === 'all' || cardStatus === currentZoomFilter) {
+                $(this).show();
+                visibleCount++;
+            } else {
+                $(this).hide();
+            }
+        });
+
+        if (visibleCount === 0) {
+            if ($('#zoom-empty-filter-message').length === 0) {
+                $('#zoom-meetings-container').append(`
+                    <div id="zoom-empty-filter-message" class="col-span-full py-16 bg-white border border-dashed border-slate-200 rounded-2xl text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest">
+                        Tidak ada pertemuan dengan status ini
+                    </div>
+                `);
+            } else {
+                $('#zoom-empty-filter-message').show();
+            }
+        } else {
+            $('#zoom-empty-filter-message').hide();
+        }
+    }
+
     function fetchZoomMeetings() {
         $('#zoom-loading-message').show();
         $('#zoom-meetings-container').empty();
@@ -667,7 +718,7 @@
 
                         const isEnded = meet.status === 'ended';
                         const statusBadge = isEnded
-                            ? `<span class="px-2 py-0.5 bg-red-50 text-red-750 border border-red-100 font-bold text-[8px] uppercase tracking-wider rounded-md">Selesai</span>`
+                            ? `<span class="px-2 py-0.5 bg-red-50 text-red-755 border border-red-100 font-bold text-[8px] uppercase tracking-wider rounded-md">Selesai</span>`
                             : `<span class="px-2 py-0.5 bg-indigo-50 border border-indigo-100 text-indigo-650 font-bold text-[8px] uppercase tracking-wider rounded-md">Kelas Virtual</span>`;
 
                         const btnHtml = isEnded
@@ -676,7 +727,7 @@
 
                         const descHtml = meet.description ? `<p class="text-slate-550 text-xs font-semibold mb-3 leading-relaxed">${meet.description}</p>` : '';
                         const card = `
-                            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:border-slate-350 transition-all flex flex-col justify-between ${isEnded ? 'opacity-60' : ''}">
+                            <div class="zoom-meeting-card bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:border-slate-350 transition-all flex flex-col justify-between ${isEnded ? 'opacity-60' : ''}" data-status="${meet.status || 'active'}">
                                 <div class="text-left">
                                     <div class="flex items-center justify-between mb-4">
                                         ${statusBadge}
@@ -693,6 +744,7 @@
                         `;
                         $('#zoom-meetings-container').append(card);
                     });
+                    applyZoomFilter();
                 } else {
                     $('#zoom-meetings-container').html(`
                         <div class="col-span-full py-16 bg-white border border-dashed border-slate-200 rounded-2xl text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest">

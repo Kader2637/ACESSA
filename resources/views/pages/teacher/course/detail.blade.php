@@ -73,6 +73,19 @@
         </button>
     </div>
 
+    <!-- Filter Buttons -->
+    <div class="flex items-center gap-2.5 mb-8">
+        <button onclick="setZoomFilter('all')" id="filter-zoom-all" class="px-5 py-2.5 bg-indigo-600 text-white font-bold text-xs rounded-xl transition-all shadow-sm">
+            Semua
+        </button>
+        <button onclick="setZoomFilter('active')" id="filter-zoom-active" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-650 font-bold text-xs rounded-xl hover:bg-slate-50 transition-all">
+            Aktif / Terjadwal
+        </button>
+        <button onclick="setZoomFilter('ended')" id="filter-zoom-ended" class="px-5 py-2.5 bg-white border border-slate-200 text-slate-650 font-bold text-xs rounded-xl hover:bg-slate-50 transition-all">
+            Selesai
+        </button>
+    </div>
+
     <div id="zoom-loading-message" class="py-20 text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest animate-pulse">Memuat jadwal pertemuan...</div>
     <div id="zoom-meetings-container" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
 </div>
@@ -627,6 +640,44 @@
     }
 
     // ZOOM HISTORY TABS FUNCTIONS
+    let currentZoomFilter = 'all';
+
+    function setZoomFilter(filter) {
+        currentZoomFilter = filter;
+        $('[id^="filter-zoom-"]').removeClass('bg-indigo-600 text-white shadow-sm').addClass('bg-white border border-slate-200 text-slate-650 hover:bg-slate-50');
+        $(`#filter-zoom-${filter}`).addClass('bg-indigo-600 text-white shadow-sm').removeClass('bg-white border border-slate-200 text-slate-650 hover:bg-slate-50');
+        applyZoomFilter();
+    }
+
+    function applyZoomFilter() {
+        const cards = $('.zoom-meeting-card');
+        let visibleCount = 0;
+        
+        cards.each(function() {
+            const cardStatus = $(this).data('status');
+            if (currentZoomFilter === 'all' || cardStatus === currentZoomFilter) {
+                $(this).show();
+                visibleCount++;
+            } else {
+                $(this).hide();
+            }
+        });
+
+        if (visibleCount === 0) {
+            if ($('#zoom-empty-filter-message').length === 0) {
+                $('#zoom-meetings-container').append(`
+                    <div id="zoom-empty-filter-message" class="col-span-full py-16 bg-white border border-dashed border-slate-200 rounded-[3rem] text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest">
+                        Tidak ada pertemuan dengan status ini
+                    </div>
+                `);
+            } else {
+                $('#zoom-empty-filter-message').show();
+            }
+        } else {
+            $('#zoom-empty-filter-message').hide();
+        }
+    }
+
     function fetchZoomMeetings() {
         $('#zoom-loading-message').show();
         $('#zoom-meetings-container').empty();
@@ -657,12 +708,25 @@
                             pwd = meet.passcode || urlObj.searchParams.get('pwd') || '';
                         } catch (e) {}
 
-                        const descHtml = meet.description ? `<p class="text-slate-500 text-xs font-medium mb-3 leading-relaxed">${meet.description}</p>` : '';
+                        const isEnded = meet.status === 'ended';
+                        const statusBadge = isEnded
+                            ? `<span class="px-3.5 py-1.5 bg-red-50 text-red-600 font-black text-[9px] uppercase tracking-widest rounded-xl">Selesai</span>`
+                            : `<span class="px-3.5 py-1.5 bg-indigo-50 text-indigo-600 font-black text-[9px] uppercase tracking-widest rounded-xl">Virtual Class</span>`;
+
+                        const btnHtml = isEnded
+                            ? `<button class="flex-1 py-3.5 bg-slate-100 text-slate-400 font-black uppercase text-[9px] tracking-wider rounded-2xl cursor-not-allowed flex items-center justify-center gap-2" disabled>
+                                   Sesi Berakhir
+                               </button>`
+                            : `<button onclick="startZoomSession('${meet.zoom_link}', '${pwd}', '${meet.id}')" class="flex-1 py-3.5 bg-slate-900 text-white font-black uppercase text-[9px] tracking-wider rounded-2xl hover:bg-indigo-600 transition-all flex items-center justify-center gap-2">
+                                   📹 Mulai Rapat
+                               </button>`;
+
+                        const descHtml = meet.description ? `<p class="text-slate-550 text-xs font-semibold mb-3 leading-relaxed">${meet.description}</p>` : '';
                         const card = `
-                            <div class="bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all flex flex-col justify-between">
+                            <div class="zoom-meeting-card bg-white border border-slate-200 rounded-[2.5rem] p-6 shadow-sm hover:shadow-xl hover:shadow-indigo-500/5 transition-all flex flex-col justify-between ${isEnded ? 'opacity-65' : ''}" data-status="${meet.status || 'active'}">
                                 <div class="text-left">
                                     <div class="flex items-center justify-between mb-4">
-                                        <span class="px-3.5 py-1.5 bg-indigo-50 text-indigo-600 font-black text-[9px] uppercase tracking-widest rounded-xl">Virtual Class</span>
+                                        ${statusBadge}
                                         <span class="text-[10px] font-bold text-slate-400">${dateStr}</span>
                                     </div>
                                     <h4 class="text-base font-black text-slate-900 mb-1 leading-tight">${meet.title}</h4>
@@ -670,9 +734,7 @@
                                     <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-6">ID: ${meetNum} &bull; Passcode: ${pwd}</p>
                                 </div>
                                 <div class="flex items-center gap-3">
-                                    <button onclick="startZoomSession('${meet.zoom_link}', '${pwd}')" class="flex-1 py-3.5 bg-slate-900 text-white font-black uppercase text-[9px] tracking-wider rounded-2xl hover:bg-indigo-600 transition-all flex items-center justify-center gap-2">
-                                        📹 Mulai Rapat
-                                    </button>
+                                    ${btnHtml}
                                     <button onclick="deleteZoomMeeting(${meet.id})" class="p-3.5 bg-red-50 text-red-600 rounded-2xl hover:bg-red-600 hover:text-white transition-all">
                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-4v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
                                     </button>
@@ -681,6 +743,7 @@
                         `;
                         $('#zoom-meetings-container').append(card);
                     });
+                    applyZoomFilter();
                 } else {
                     $('#zoom-meetings-container').html(`
                         <div class="col-span-full py-16 bg-white border border-dashed border-slate-200 rounded-[3rem] text-center text-slate-400 font-bold uppercase text-[10px] tracking-widest">
@@ -696,7 +759,7 @@
         });
     }
 
-    function startZoomSession(link, rawPasscode) {
+    function startZoomSession(link, rawPasscode, dbId) {
         try {
             const urlObj = new URL(link);
             const pathParts = urlObj.pathname.split('/');
@@ -710,7 +773,7 @@
             const passcode = rawPasscode || urlObj.searchParams.get('pwd') || '';
             
             // Redirect to standalone zoom-session view in a new window/tab
-            const zoomUrl = `/zoom-session?meeting_number=${meetingNumber}&passcode=${encodeURIComponent(passcode)}&role=1&course_id=${courseId}`;
+            const zoomUrl = `/zoom-session?meeting_number=${meetingNumber}&passcode=${encodeURIComponent(passcode)}&role=1&course_id=${courseId}&meeting_db_id=${dbId}`;
             window.open(zoomUrl, '_blank');
         } catch (e) {
             toastr.error('Format tautan Zoom tidak valid.');
