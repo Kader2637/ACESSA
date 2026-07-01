@@ -300,7 +300,7 @@
         <div class="p-4 flex-shrink-0 border-t border-white/5">
             <div class="flex items-center gap-3 p-3 rounded-xl bg-white/5 hover:bg-white/8 transition-colors cursor-pointer" onclick="window.location.href='{{ route('teacher.profile') }}'">
                 <div class="w-9 h-9 rounded-xl overflow-hidden border border-white/10 flex-shrink-0">
-                    <img src="{{ asset('storage/'.auth()->user()->image) }}" class="w-full h-full object-cover" alt="Profile" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <img src="{{ auth()->user()->image && auth()->user()->image !== 'user.png' ? asset('storage/'.auth()->user()->image) : '/user.png' }}" class="w-full h-full object-cover" alt="Profile" onerror="this.onerror=null; this.src='/user.png';">
                     <div class="w-full h-full bg-gradient-to-br from-indigo-500 to-cyan-500 items-center justify-center text-white font-bold text-sm hidden">
                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     </div>
@@ -363,7 +363,7 @@
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Instructor</p>
                     </div>
                     <div class="w-10 h-10 rounded-xl border-2 border-slate-100 group-hover:border-indigo-200 overflow-hidden transition-all shadow-sm">
-                        <img src="{{ asset('storage/'.auth()->user()->image) }}" class="w-full h-full object-cover" alt="Profile" onerror="this.style.background='linear-gradient(135deg,#4f46e5,#06b6d4)'; this.style.display='flex';">
+                        <img src="{{ auth()->user()->image && auth()->user()->image !== 'user.png' ? asset('storage/'.auth()->user()->image) : '/user.png' }}" class="w-full h-full object-cover" alt="Profile" onerror="this.onerror=null; this.src='/user.png';">
                     </div>
                 </div>
             </div>

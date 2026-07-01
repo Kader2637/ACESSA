@@ -118,7 +118,7 @@
             let delay = 0; // Untuk animasi bertahap (cascade)
 
             list.forEach(c => {
-                const thumbnail = c.thumbnail ? `/storage/${c.thumbnail}` : '/classaccesa.png';
+                const thumbnail = (c.thumbnail && c.thumbnail !== 'default.png') ? `/storage/${c.thumbnail}` : '/classaccesa.png';
                 const desc = c.description
                     ? (c.description.length > 90 ? c.description.substring(0, 90) + '...' : c.description)
                     : 'Modul komprehensif yang dirancang untuk mempercepat karir teknologi Anda.';

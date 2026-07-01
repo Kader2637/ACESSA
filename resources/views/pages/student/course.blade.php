@@ -121,7 +121,7 @@
                     const data = res.data;
                     $('#title').text(data.name);
                     $('#description_classroom').text(data.description);
-                    $('#class-thumbnail').attr('src', data.thumbnail ? `{{ asset('storage') }}/${data.thumbnail}` : '/classaccesa.png');
+                    $('#class-thumbnail').attr('src', (data.thumbnail && data.thumbnail !== 'default.png') ? `{{ asset('storage') }}/${data.thumbnail}` : '/classaccesa.png');
                     $('#nameTeacher, #nameTeacher-top').text(data.user.name);
                     $('#profile').attr('src', data.user.profile ? `/storage/${data.user.profile}` : '/user.png');
                     ambilDataMateri();

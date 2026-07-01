@@ -203,7 +203,7 @@
 
                 if (data.length > 0) {
                     data.forEach((kelas) => {
-                        const thumb = kelas.thumbnail ? `{{ asset('storage') }}/${kelas.thumbnail}` : '/classaccesa.png';
+                        const thumb = (kelas.thumbnail && kelas.thumbnail !== 'default.png') ? `{{ asset('storage') }}/${kelas.thumbnail}` : '/classaccesa.png';
                         const desc = kelas.description.length > 85 ? kelas.description.substring(0, 85) + '...' : kelas.description;
                         const students = kelas.student_count || 0;
 

@@ -241,10 +241,11 @@
             filtered.forEach((k, i) => {
                 const safeDesc = k.description.replace(/'/g, "\\'").replace(/"/g, '&quot;');
                 const semesterName = k.semester ? k.semester.name : 'Belum ditentukan';
+                const thumb = (k.thumbnail && k.thumbnail !== 'default.png') ? `/storage/${k.thumbnail}` : '/classaccesa.png';
                 rows += `
                 <tr class="hover:bg-slate-50/80 transition-all duration-300">
                     <td class="px-8 py-6 text-center text-slate-400 font-black">${i + 1}</td>
-                    <td class="px-6 py-6"><img src="/storage/${k.thumbnail}" class="w-24 h-14 object-cover rounded-xl border shadow-sm"></td>
+                    <td class="px-6 py-6"><img src="${thumb}" class="w-24 h-14 object-cover rounded-xl border shadow-sm" onerror="this.onerror=null; this.src='/classaccesa.png';"></td>
                     <td class="px-6 py-6">
                         <div class="font-black text-slate-900 text-sm tracking-tight">${k.name}</div>
                         <div class="text-[10px] text-indigo-500 font-bold uppercase tracking-widest mt-0.5">${k.codeClass} &bull; ${k.sks} SKS</div>

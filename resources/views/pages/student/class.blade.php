@@ -95,7 +95,7 @@
                     response.StudentClassroomRelations.forEach(relation => {
                         const course = relation.course;
                         const user = relation.user;
-                        const courseThumbnail = course.thumbnail ? `/storage/${course.thumbnail}` : '/classaccesa.png';
+                        const courseThumbnail = (course.thumbnail && course.thumbnail !== 'default.png') ? `/storage/${course.thumbnail}` : '/classaccesa.png';
                         const authorImage = user.profile ? `/storage/${user.profile}` : '/user.png';
                         const desc = course.description.length > 80 ? course.description.substring(0, 80) + '...' : course.description;
 

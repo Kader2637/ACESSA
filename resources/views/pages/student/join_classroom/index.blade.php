@@ -52,7 +52,7 @@
                     feather.replace();
                 } else {
                     $.each(classrooms, function(index, classroom) {
-                        const thumb = classroom.thumbnail ? `/storage/${classroom.thumbnail}` : '/classaccesa.png';
+                        const thumb = (classroom.thumbnail && classroom.thumbnail !== 'default.png') ? `/storage/${classroom.thumbnail}` : '/classaccesa.png';
                         const userImg = classroom.user_image ? `/storage/${classroom.user_image}` : '/user.png';
                         const desc = classroom.description.length > 80 ? classroom.description.substring(0, 80) + '...' : classroom.description;
 

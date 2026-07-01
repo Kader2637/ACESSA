@@ -60,7 +60,7 @@
                         feather.replace();
                     } else {
                         response.data.forEach(function(course) {
-                            const courseThumbnail = course.thumbnail ? `/storage/${course.thumbnail}` : '/classaccesa.png';
+                            const courseThumbnail = (course.thumbnail && course.thumbnail !== 'default.png') ? `/storage/${course.thumbnail}` : '/classaccesa.png';
                             const authorImage = course.profile ? `/storage/${course.profile}` : '/user.png';
                             const desc = course.description.length > 90 ? course.description.substring(0, 90) + '...' : course.description;
 

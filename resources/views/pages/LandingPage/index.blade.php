@@ -654,7 +654,7 @@
             let delay = 100;
 
             sliceData.forEach(c => {
-                const thumb = c.thumbnail
+                const thumb = (c.thumbnail && c.thumbnail !== 'default.png')
                     ? `/storage/${c.thumbnail}`
                     : '/classaccesa.png';
 

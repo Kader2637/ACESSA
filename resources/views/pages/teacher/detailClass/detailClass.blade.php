@@ -217,7 +217,7 @@
                 $('#class-status-badge').text(classroom.statusClass || 'public');
                 $('#class-sks').text((classroom.sks || 3) + ' SKS');
                 
-                const thumb = classroom.thumbnail ? `/storage/${classroom.thumbnail}` : '/classaccesa.png';
+                const thumb = (classroom.thumbnail && classroom.thumbnail !== 'default.png') ? `/storage/${classroom.thumbnail}` : '/classaccesa.png';
                 $('#class-thumbnail').attr('src', thumb);
 
                 // Set course details link

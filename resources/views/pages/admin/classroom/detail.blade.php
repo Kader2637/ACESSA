@@ -151,7 +151,7 @@
                     const data = res.data;
                     $('#title').text(data.name);
                     $('#description_classroom').text(data.description);
-                    $('#class-thumbnail').attr('src', data.thumbnail ? `/storage/${data.thumbnail}` : '/classaccesa.png');
+                    $('#class-thumbnail').attr('src', (data.thumbnail && data.thumbnail !== 'default.png') ? `/storage/${data.thumbnail}` : '/classaccesa.png');
                     $('#profileUser').attr('src', data.user.profile ? `/storage/${data.user.profile}` : '/user.png');
                     $('#nameTeacher').text(data.user.name);
                     ambilDataMateri();

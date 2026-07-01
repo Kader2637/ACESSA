@@ -12,7 +12,7 @@
         </div>
         <div class="w-9 h-9 rounded-lg border border-slate-200 overflow-hidden shrink-0">
             @php
-                $avatar = auth()->user()->image ? asset('storage/'.auth()->user()->image) : '/user.png';
+                $avatar = auth()->user()->image && auth()->user()->image !== 'user.png' ? asset('storage/'.auth()->user()->image) : '/user.png';
             @endphp
             <img src="{{ $avatar }}" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='/user.png';">
         </div>

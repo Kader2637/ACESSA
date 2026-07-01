@@ -174,7 +174,7 @@
                         container.html('<div class="col-span-full py-16 text-center bg-white rounded-2xl border border-dashed border-slate-200"><p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">Antrean bersih, tidak ada kelas tertunda.</p></div>');
                     } else {
                         res.data.forEach(item => {
-                            const thumb = item.thumbnail ? `/storage/${item.thumbnail}` : '/classaccesa.png';
+                            const thumb = (item.thumbnail && item.thumbnail !== 'default.png') ? `/storage/${item.thumbnail}` : '/classaccesa.png';
                             container.append(`
                                 <div class="course-card group animate-fade-in text-left">
                                     <div class="thumb-container">
