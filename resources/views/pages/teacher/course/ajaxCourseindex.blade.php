@@ -177,6 +177,74 @@
     </div>
 </div>
 
+{{-- MODAL QR ABSENSI --}}
+<div id="modal-qr-attendance" class="fixed inset-0 z-[100] hidden items-center justify-center bg-slate-950/80 backdrop-blur-md overflow-y-auto p-4 md:p-6">
+    <div class="bg-white rounded-3xl w-full max-w-4xl shadow-2xl overflow-hidden border border-slate-100 flex flex-col md:flex-row h-full max-h-[85vh] animate-scale-in text-left">
+        
+        {{-- Left Side: QR Code, Short Code, Countdown Timer --}}
+        <div class="flex-1 p-6 md:p-8 flex flex-col items-center justify-center border-b md:border-b-0 md:border-r border-slate-100 bg-slate-50/50">
+            <span class="px-3 py-1 bg-indigo-50 border border-indigo-100 text-indigo-600 text-[10px] font-black uppercase tracking-wider rounded-lg mb-2">SCAN BARCODE UNTUK ABSEN</span>
+            <h4 id="qr-session-title" class="text-lg font-black text-slate-900 mb-6 text-center">Judul Sesi Absensi</h4>
+            
+            {{-- QR Frame --}}
+            <div class="w-56 h-56 md:w-64 md:h-64 bg-white rounded-3xl p-4 shadow-lg border border-slate-200/60 flex items-center justify-center relative mb-4">
+                <img id="attendance-qr-img" src="" class="w-full h-full object-contain" alt="QR Code Absensi">
+                <div id="qr-expired-overlay" class="absolute inset-0 bg-white/95 flex flex-col items-center justify-center text-center p-4 rounded-3xl hidden">
+                    <svg class="w-12 h-12 text-red-500 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <span class="text-sm font-extrabold text-slate-800">Sesi Kedaluwarsa</span>
+                    <span class="text-[10px] text-slate-400 font-bold mt-1">Siswa tidak bisa lagi melakukan absen</span>
+                </div>
+            </div>
+
+            {{-- Short Code --}}
+            <div class="text-center mb-6">
+                <p class="text-[9px] font-bold text-slate-400 uppercase tracking-widest leading-none mb-1">KODE ABSENSI MANUAL</p>
+                <span id="qr-session-code" class="text-2xl font-mono font-black text-slate-950 tracking-widest bg-slate-200 px-4 py-1.5 rounded-xl border">ABCDEF</span>
+            </div>
+
+            {{-- Countdown Timer --}}
+            <div class="w-full max-w-xs bg-slate-900 rounded-2xl p-4 text-white text-center shadow-md">
+                <p class="text-[9px] font-bold text-slate-500 uppercase tracking-widest mb-1 leading-none">Sisa Waktu Validitas</p>
+                <div id="qr-countdown" class="text-2xl font-mono font-black text-yellow-400 leading-none">00:00</div>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full mt-3 overflow-hidden">
+                    <div id="qr-progress-bar" class="bg-indigo-500 h-full rounded-full transition-all duration-1000" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Right Side: Attendance Live List --}}
+        <div class="w-full md:w-[380px] p-6 flex flex-col h-full bg-white">
+            <div class="flex justify-between items-center mb-4 flex-shrink-0">
+                <div>
+                    <h4 class="font-extrabold text-slate-900 text-sm">Siswa Hadir</h4>
+                    <p class="text-[10px] text-slate-400 font-bold mt-0.5">Live update otomatis</p>
+                </div>
+                <span class="px-2.5 py-1 bg-slate-100 text-slate-800 font-extrabold text-xs rounded-lg" id="qr-attendee-count">0/0</span>
+            </div>
+            
+            {{-- Scanned Student List --}}
+            <div class="flex-grow overflow-y-auto min-h-[200px]" id="qr-student-list-container">
+                <div class="divide-y divide-slate-100" id="qr-student-list"></div>
+                <div id="qr-student-empty" class="h-full flex flex-col items-center justify-center text-center p-8">
+                    <div class="w-12 h-12 bg-slate-50 border rounded-2xl flex items-center justify-center animate-pulse mb-3">
+                        <svg class="w-5 h-5 text-slate-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path></svg>
+                    </div>
+                    <p class="text-xs font-bold text-slate-800">Menunggu Kehadiran</p>
+                    <p class="text-[10px] text-slate-400 font-medium mt-1 leading-relaxed">Minta siswa untuk memindai kode QR atau memasukkan kode manual.</p>
+                </div>
+            </div>
+
+            {{-- Close Button --}}
+            <div class="pt-4 border-t border-slate-100 flex-shrink-0 mt-4">
+                <button onclick="closeQRModal()" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all">
+                    Tutup Layar Absensi
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
 @endsection
 
 @section('script')
@@ -200,6 +268,7 @@
         $(`#content-${tab}`).removeClass('hidden');
         $('[id^="tab-"]').removeClass('nav-tab-active text-indigo-600').addClass('text-slate-400');
         $(`#tab-${tab}`).addClass('nav-tab-active text-indigo-600').removeClass('text-slate-400');
+        if (tab === 'absensi') loadAttendanceSessions(classId);
     }
 
     // LOAD DATA KELAS
@@ -210,7 +279,7 @@
                 if (res.status === "success") {
                     $('#class-name-header, #class-name-title').text(res.data.name);
                     $('#class-description').text(res.data.description);
-                    $('#class-thumbnail').attr('src', `/storage/${res.data.thumbnail}`);
+                    $('#class-thumbnail').attr('src', (res.data.thumbnail && res.data.thumbnail !== 'default.png') ? `/storage/${res.data.thumbnail}` : '/classaccesa.png');
                     fetchMaterials(); ambilDataSiswa(); ambilDataPending();
                 }
             }
@@ -329,7 +398,7 @@
                 if (res.data.length > 0) {
                     res.data.forEach(s => {
                         list.append(`<div class="bg-white p-6 rounded-[2rem] border border-slate-100 flex flex-col items-center text-center shadow-sm animate-fade-in group">
-                            <img src="${s.profile ? '/storage/'+s.profile : '/user.png'}" class="w-20 h-20 rounded-3xl object-cover mb-4 border-4 border-slate-50 shadow-sm">
+                            <img src="${s.profile && s.profile !== 'user.png' && s.profile !== 'default.png' ? '/storage/'+s.profile : '/user.png'}" class="w-20 h-20 rounded-3xl object-cover mb-4 border-4 border-slate-50 shadow-sm" onerror="this.onerror=null; this.src='/user.png';">
                             <h6 class="text-slate-900 font-black mb-1 truncate w-full">${s.name}</h6>
                             <p class="text-[9px] text-slate-400 font-black uppercase mb-6 tracking-widest">${s.email}</p>
                             <button onclick="prepareKick('${s.id_relation}')" class="text-red-500 font-black text-[9px] uppercase tracking-widest hover:underline">Kick Out</button>
@@ -349,7 +418,7 @@
                     $('#pending-count').text(res.data.length).removeClass('hidden');
                     res.data.forEach(s => {
                         list.append(`<div class="bg-white p-6 rounded-[2rem] border border-slate-100 flex flex-col items-center text-center shadow-sm animate-fade-in">
-                            <img src="${s.profile ? '/storage/'+s.profile : '/user.png'}" class="w-20 h-20 rounded-3xl object-cover mb-4 border shadow-sm">
+                            <img src="${s.profile && s.profile !== 'user.png' && s.profile !== 'default.png' ? '/storage/'+s.profile : '/user.png'}" class="w-20 h-20 rounded-3xl object-cover mb-4 border shadow-sm" onerror="this.onerror=null; this.src='/user.png';">
                             <h6 class="text-slate-900 font-black mb-6 truncate w-full">${s.name}</h6>
                             <div class="flex gap-2 w-full">
                                 <button onclick="prepareApproval('${s.id_relation}', 'accept')" class="flex-1 py-3 bg-green-500 text-white rounded-xl font-black text-[9px] uppercase shadow-lg shadow-green-100">Accept</button>
@@ -378,7 +447,7 @@
                         const isMe = msg.user_id == userId;
                         box.append(`
                         <div class="flex ${isMe ? 'flex-row-reverse' : 'flex-row'} items-end gap-3 animate-fade-in" data-message-id="${msg.id}">
-                            <img src="${msg.user_image ? '/storage/'+msg.user_image : '/user.png'}" class="w-10 h-10 rounded-full object-cover mb-1 shadow-sm">
+                            <img src="${msg.user_image && msg.user_image !== 'user.png' && msg.user_image !== 'default.png' ? '/storage/'+msg.user_image : '/user.png'}" class="w-10 h-10 rounded-full object-cover mb-1 shadow-sm" onerror="this.onerror=null; this.src='/user.png';">
                             <div class="max-w-[70%]">
                                 <div class="px-6 py-4 rounded-3xl ${isMe ? 'bg-indigo-600 text-white rounded-br-none shadow-indigo-100' : 'bg-white text-slate-900 rounded-bl-none shadow-sm border border-slate-100'}">
                                     <p class="text-[9px] font-black uppercase tracking-widest mb-1 opacity-60">${isMe ? 'Anda' : msg.user_name}</p>
@@ -403,6 +472,200 @@
             success: function() { $('#input-pesan').val(''); ambilPesan(); }
         });
     });
+
+    let pollInterval = null;
+    let countdownInterval = null;
+
+    function loadAttendanceSessions(classId) {
+        const table = $('#attendance-list-table');
+        table.empty();
+        $('#attendance-empty').addClass('hidden');
+
+        $.ajax({
+            url: `/api/classroom/${classId}/attendance/sessions`,
+            method: 'GET',
+            success: function(res) {
+                const sessions = res.data || [];
+                if (sessions.length === 0) {
+                    $('#attendance-empty').removeClass('hidden');
+                    return;
+                }
+
+                sessions.forEach((s, index) => {
+                    const validUntil = new Date(s.valid_until);
+                    const now = new Date();
+                    const isExpired = validUntil < now;
+                    
+                    const actionBtn = isExpired 
+                        ? `<button onclick="openQRModal(${s.id})" class="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-[10px] font-bold">Lihat Kehadiran</button>`
+                        : `<button onclick="openQRModal(${s.id})" class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg text-[10px] font-bold flex items-center gap-1">⚡ Tampilkan QR</button>`;
+
+                    const statusBadge = isExpired
+                        ? `<span class="text-red-500 font-bold">Kedaluwarsa</span>`
+                        : `<span class="text-emerald-500 font-bold animate-pulse">Aktif</span>`;
+
+                    const dateString = validUntil.toLocaleString('id-ID', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: 'short' });
+
+                    table.append(`
+                        <tr>
+                            <td class="px-6 py-4 text-center text-slate-400">${index + 1}</td>
+                            <td class="px-6 py-4 text-slate-900">${s.title}</td>
+                            <td class="px-6 py-4 text-center font-mono font-bold text-slate-700 bg-slate-50 rounded-lg">${s.code}</td>
+                            <td class="px-6 py-4 text-slate-500">${dateString} (${statusBadge})</td>
+                            <td class="px-6 py-4 text-right px-8">${actionBtn}</td>
+                        </tr>
+                    `);
+                });
+            },
+            error: () => $('#attendance-empty').removeClass('hidden')
+        });
+    }
+
+    // Submit handler for creating new attendance session
+    $('#form-create-attendance').submit(function(e) {
+        e.preventDefault();
+        const title = $('#attendance-title').val();
+        const duration = $('#attendance-duration').val();
+
+        $.ajax({
+            url: '/api/attendance/create',
+            method: 'POST',
+            data: {
+                classroom_id: classId,
+                title: title,
+                duration: duration
+            },
+            success: function(res) {
+                toastr.success(res.message);
+                $('#attendance-title').val('');
+                loadAttendanceSessions(classId);
+                openQRModal(res.data.id);
+            },
+            error: function(xhr) {
+                const msg = xhr.responseJSON ? xhr.responseJSON.message : 'Gagal membuat sesi absensi.';
+                toastr.error(msg);
+            }
+        });
+    });
+
+    function openQRModal(sessionId) {
+        stopAttendancePoll();
+        $('#modal-qr-attendance').removeClass('hidden').addClass('flex');
+        fetchQRModalDetails(sessionId);
+        pollAttendees(sessionId);
+        pollInterval = setInterval(() => pollAttendees(sessionId), 3000);
+    }
+
+    function fetchQRModalDetails(sessionId) {
+        $.ajax({
+            url: `/api/attendance/session/${sessionId}/records`,
+            method: 'GET',
+            success: function(res) {
+                const s = res.session;
+                $('#qr-session-title').text(s.title);
+                $('#qr-session-code').text(s.code);
+                
+                const scanUrl = window.location.origin + `/attendance/scan/${s.token}`;
+                const qrApiUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(scanUrl)}`;
+                $('#attendance-qr-img').attr('src', qrApiUrl);
+
+                if (s.is_expired) {
+                    $('#qr-expired-overlay').removeClass('hidden');
+                    $('#qr-countdown').text('Selesai').removeClass('text-yellow-400').addClass('text-red-500');
+                    $('#qr-progress-bar').css('width', '0%');
+                } else {
+                    $('#qr-expired-overlay').addClass('hidden');
+                    $('#qr-countdown').removeClass('text-red-500').addClass('text-yellow-400');
+                    startCountdown(s.valid_until);
+                }
+            }
+        });
+    }
+
+    function startCountdown(validUntilStr) {
+        if (countdownInterval) clearInterval(countdownInterval);
+
+        const validUntil = new Date(validUntilStr).getTime();
+
+        const updateClock = () => {
+            const now = new Date().getTime();
+            const distance = validUntil - now;
+
+            if (distance <= 0) {
+                clearInterval(countdownInterval);
+                $('#qr-countdown').text('Waktu Habis').removeClass('text-yellow-400').addClass('text-red-500');
+                $('#qr-expired-overlay').removeClass('hidden');
+                $('#qr-progress-bar').css('width', '0%');
+                
+                loadAttendanceSessions(classId);
+                return;
+            }
+
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+
+            const minStr = String(minutes).padStart(2, '0');
+            const secStr = String(seconds).padStart(2, '0');
+            $('#qr-countdown').text(`${minStr}:${secStr}`);
+            $('#qr-progress-bar').css('width', `100%`);
+        };
+
+        updateClock();
+        countdownInterval = setInterval(updateClock, 1000);
+    }
+
+    function pollAttendees(sessionId) {
+        $.ajax({
+            url: `/api/attendance/session/${sessionId}/records`,
+            method: 'GET',
+            success: function(res) {
+                const data = res.data || [];
+                const attended = data.filter(st => st.status === 'Hadir');
+                
+                $('#qr-attendee-count').text(`${attended.length} / ${data.length}`);
+
+                const list = $('#qr-student-list');
+                list.empty();
+
+                if (attended.length === 0) {
+                    $('#qr-student-empty').removeClass('hidden');
+                    return;
+                }
+
+                $('#qr-student-empty').addClass('hidden');
+                attended.forEach(st => {
+                    const avatar = st.profile ? `/storage/${st.profile}` : '/user.png';
+                    list.append(`
+                        <div class="py-3 flex items-center gap-3">
+                            <img src="${avatar}" class="w-8 h-8 rounded-lg object-cover border border-slate-100" onerror="this.onerror=null; this.src='/user.png';">
+                            <div class="flex-grow">
+                                <h5 class="text-xs font-extrabold text-slate-800">${st.name}</h5>
+                                <p class="text-[9px] text-emerald-600 font-bold">Hadir pukul ${st.scanned_at}</p>
+                            </div>
+                            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+                        </div>
+                    `);
+                });
+            }
+        });
+    }
+
+    function closeQRModal() {
+        $('#modal-qr-attendance').removeClass('flex').addClass('hidden');
+        stopAttendancePoll();
+        loadAttendanceSessions(classId);
+    }
+
+    function stopAttendancePoll() {
+        if (pollInterval) {
+            clearInterval(pollInterval);
+            pollInterval = null;
+        }
+        if (countdownInterval) {
+            clearInterval(countdownInterval);
+            countdownInterval = null;
+        }
+    }
 
     $(document).ready(function() {
         fetchClassData();
