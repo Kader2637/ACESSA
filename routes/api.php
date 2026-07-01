@@ -129,3 +129,11 @@ Route::get('/zoom-meetings/{course_id}', [App\Http\Controllers\Api\ZoomMeetingCo
 Route::post('/zoom-meetings', [App\Http\Controllers\Api\ZoomMeetingController::class, 'store']);
 Route::delete('/zoom-meetings/{id}', [App\Http\Controllers\Api\ZoomMeetingController::class, 'destroy']);
 Route::post('/zoom-meetings/end/{id}', [App\Http\Controllers\Api\ZoomMeetingController::class, 'endMeeting']);
+
+// QR Barcode Attendance
+Route::post('/attendance/create', [App\Http\Controllers\Api\AttendanceController::class, 'createSession']);
+Route::get('/classroom/{classId}/attendance/sessions', [App\Http\Controllers\Api\AttendanceController::class, 'getSessions']);
+Route::get('/attendance/session/{sessionId}/records', [App\Http\Controllers\Api\AttendanceController::class, 'getSessionDetails']);
+Route::post('/attendance/code', [App\Http\Controllers\Api\AttendanceController::class, 'submitByCode']);
+Route::get('/classroom/{classId}/attendance/my', [App\Http\Controllers\Api\AttendanceController::class, 'getStudentAttendance']);
+

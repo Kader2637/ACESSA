@@ -44,6 +44,7 @@
         <button onclick="switchTab('materi')" id="tab-materi" class="tab-btn px-5 py-2.5 font-bold text-xs text-slate-500 hover:text-slate-800 rounded-lg transition-all">Materi Kurikulum</button>
         <button onclick="switchTab('siswa')" id="tab-siswa" class="tab-btn px-5 py-2.5 font-bold text-xs text-slate-500 hover:text-slate-800 rounded-lg transition-all">Teman Sekelas</button>
         <button onclick="switchTab('forum')" id="tab-forum" class="tab-btn px-5 py-2.5 font-bold text-xs text-slate-500 hover:text-slate-800 rounded-lg transition-all">Forum Diskusi</button>
+        <button onclick="switchTab('absensi')" id="tab-absensi" class="tab-btn px-5 py-2.5 font-bold text-xs text-slate-500 hover:text-slate-800 rounded-lg transition-all">Absensi Saya</button>
     </div>
 
     {{-- Tab Contents --}}
@@ -95,6 +96,52 @@
                 </form>
             </div>
         </div>
+
+        {{-- Absensi Saya --}}
+        <div id="content-absensi" class="tab-content hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 text-left animate-fade-in">
+                
+                {{-- Form Input Kode --}}
+                <div class="lg:col-span-1 bg-white border border-slate-200 p-6 rounded-3xl h-fit shadow-sm">
+                    <h3 class="font-extrabold text-slate-900 text-sm mb-2">Input Kode Absensi</h3>
+                    <p class="text-[10px] text-slate-400 font-bold mb-4 uppercase tracking-wider">Masukkan kode 6 digit dari Dosen</p>
+                    <form id="form-submit-attendance-code" class="space-y-4">
+                        <div>
+                            <input type="text" id="attendance-code-input" class="w-full px-4 py-3 text-lg font-mono font-black text-center tracking-widest bg-slate-50 border border-slate-200 rounded-xl text-slate-800 focus:border-indigo-600 outline-none uppercase" maxlength="6" placeholder="------" required>
+                        </div>
+                        <button type="submit" class="w-full py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl flex items-center justify-center gap-1.5 transition-all active:scale-[0.98]">
+                            ⚡ Kirim Kehadiran
+                        </button>
+                    </form>
+                </div>
+
+                {{-- Riwayat Kehadiran --}}
+                <div class="lg:col-span-2 bg-white border border-slate-200 overflow-hidden rounded-3xl shadow-sm">
+                    <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+                        <h3 class="font-extrabold text-slate-900 text-sm">Kehadiran Saya</h3>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-xs">
+                            <thead class="bg-slate-50 border-b border-slate-100 text-slate-400 font-bold uppercase tracking-wider">
+                                <tr>
+                                    <th class="px-6 py-3.5 w-16 text-center">No</th>
+                                    <th class="px-6 py-3.5">Nama Sesi / Pertemuan</th>
+                                    <th class="px-6 py-3.5 text-center">Kode</th>
+                                    <th class="px-6 py-3.5">Waktu Scan</th>
+                                    <th class="px-6 py-3.5 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="student-attendance-table" class="divide-y divide-slate-50 text-slate-700 font-semibold"></tbody>
+                        </table>
+                    </div>
+                    <div id="student-attendance-empty" class="py-12 text-center text-slate-400 text-xs font-semibold">
+                        Belum ada riwayat absensi untuk kelas ini.
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
     </div>
 </div>
 @endsection
@@ -110,6 +157,7 @@
         $('.tab-btn').removeClass('active');
         $(`#tab-${tab}`).addClass('active');
         if(tab === 'forum') scrollChatBottom();
+        if(tab === 'absensi') ambilDataAbsensi();
     }
 
     const ambilDataKelas = () => {
@@ -251,6 +299,76 @@
             success: function() {
                 $('#input-pesan').val('');
                 ambilPesan();
+            }
+        });
+    });
+
+    const ambilDataAbsensi = () => {
+        const table = $('#student-attendance-table');
+        table.empty();
+        $('#student-attendance-empty').addClass('hidden');
+
+        $.ajax({
+            url: `/api/classroom/${classId}/attendance/my`,
+            method: 'GET',
+            success: function(res) {
+                const data = res.data || [];
+                if (data.length === 0) {
+                    $('#student-attendance-empty').removeClass('hidden');
+                    return;
+                }
+
+                data.forEach((s, index) => {
+                    let statusBadge = '';
+                    if (s.status === 'Hadir') {
+                        statusBadge = `<span class="px-2.5 py-1 bg-emerald-50 text-emerald-600 rounded-lg text-[10px] font-bold">Hadir</span>`;
+                    } else if (s.status === 'Tidak Hadir') {
+                        statusBadge = `<span class="px-2.5 py-1 bg-red-50 text-red-600 rounded-lg text-[10px] font-bold">Tidak Hadir</span>`;
+                    } else {
+                        statusBadge = `<span class="px-2.5 py-1 bg-amber-50 text-amber-600 rounded-lg text-[10px] font-bold animate-pulse">Belum Absen</span>`;
+                    }
+
+                    const timeStr = s.scanned_at ? s.scanned_at : '—';
+
+                    table.append(`
+                        <tr>
+                            <td class="px-6 py-4 text-center text-slate-400">${index + 1}</td>
+                            <td class="px-6 py-4 text-slate-900">${s.title}</td>
+                            <td class="px-6 py-4 text-center font-mono font-bold text-slate-700 bg-slate-50/50 rounded-lg">${s.code}</td>
+                            <td class="px-6 py-4 text-slate-500">${timeStr}</td>
+                            <td class="px-6 py-4 text-center">${statusBadge}</td>
+                        </tr>
+                    `);
+                });
+            },
+            error: () => $('#student-attendance-empty').removeClass('hidden')
+        });
+    };
+
+    // Manual input code submit
+    $('#form-submit-attendance-code').submit(function(e) {
+        e.preventDefault();
+        const code = $('#attendance-code-input').val();
+        if (!code || code.length !== 6) {
+            toastr.error('Masukkan 6 digit kode absensi dengan benar.');
+            return;
+        }
+
+        $.ajax({
+            url: '/api/attendance/code',
+            method: 'POST',
+            data: {
+                code: code,
+                classroom_id: classId
+            },
+            success: function(res) {
+                toastr.success(res.message);
+                $('#attendance-code-input').val('');
+                ambilDataAbsensi();
+            },
+            error: function(xhr) {
+                const msg = xhr.responseJSON ? xhr.responseJSON.message : 'Gagal mengirim absensi.';
+                toastr.error(msg);
             }
         });
     });

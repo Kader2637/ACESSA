@@ -70,6 +70,8 @@ Route::get('/test-zoom-api', function () {
     ]);
 });
 
+Route::get('/attendance/scan/{token}', [App\Http\Controllers\Api\AttendanceController::class, 'scanLanding'])->middleware('auth')->name('attendance.scan');
+
 require_once __DIR__ . '/kader.php';
 require_once __DIR__ . '/erik.php';
 require_once __DIR__ . '/ivan.php';

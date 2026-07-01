@@ -46,7 +46,11 @@ class User extends Authenticatable
     }
 
     public function getRoleAttribute()
-{
-    return $this->attributes['role'];
-}
+    {
+        return $this->attributes['role'];
+    }
+
+    public function attendanceRecords() {
+        return $this->hasMany(AttendanceRecord::class);
+    }
 }
