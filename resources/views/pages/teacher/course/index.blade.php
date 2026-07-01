@@ -266,6 +266,19 @@
                     <div id="qr-progress-bar" class="bg-indigo-500 h-full rounded-full transition-all duration-1000" style="width: 100%"></div>
                 </div>
             </div>
+
+            {{-- Extend Session Select --}}
+            <div class="w-full max-w-xs mt-4">
+                <label class="block text-[9px] font-black text-slate-450 uppercase tracking-wider mb-2 text-center leading-none">Perpanjang Sisa Waktu</label>
+                <select id="extend-session-select" class="w-full text-xs font-bold text-slate-700 bg-slate-50 border border-slate-200 rounded-xl px-4 py-2.5 focus:outline-none focus:border-indigo-600 transition-all">
+                    <option value="" selected disabled>-- Pilih Durasi Tambahan --</option>
+                    <option value="5">+5 Menit</option>
+                    <option value="10">+10 Menit</option>
+                    <option value="15">+15 Menit</option>
+                    <option value="30">+30 Menit</option>
+                    <option value="60">+60 Menit</option>
+                </select>
+            </div>
         </div>
 
         {{-- Right Side: Attendance Live List --}}

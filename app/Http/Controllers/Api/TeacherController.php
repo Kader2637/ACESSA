@@ -97,6 +97,9 @@ class TeacherController extends Controller
     {
         $data = Classroom::where('user_id' , $id)
         ->where('status' , 'accept')
+        ->withCount(['studentClassroomRelations as student_count' => function($query) {
+            $query->where('status', 'accept');
+        }])
         ->get();
         return response()->json([
             'status' => 'success',

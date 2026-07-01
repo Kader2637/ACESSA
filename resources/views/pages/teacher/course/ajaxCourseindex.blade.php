@@ -552,13 +552,37 @@
         });
     });
 
+    let activeSessionIdForQR = null;
+
     function openQRModal(sessionId) {
+        activeSessionIdForQR = sessionId;
         stopAttendancePoll();
         $('#modal-qr-attendance').removeClass('hidden').addClass('flex');
         fetchQRModalDetails(sessionId);
         pollAttendees(sessionId);
         pollInterval = setInterval(() => pollAttendees(sessionId), 3000);
     }
+
+    $('#extend-session-select').on('change', function() {
+        const minutes = $(this).val();
+        if (!minutes || !activeSessionIdForQR) return;
+
+        $.ajax({
+            url: `/api/attendance/session/${activeSessionIdForQR}/extend`,
+            method: 'POST',
+            data: { duration: minutes },
+            success: function(res) {
+                toastr.success(res.message);
+                $('#extend-session-select').val('');
+                fetchQRModalDetails(activeSessionIdForQR);
+            },
+            error: function(xhr) {
+                const msg = xhr.responseJSON ? xhr.responseJSON.message : 'Gagal memperpanjang sesi.';
+                toastr.error(msg);
+                $('#extend-session-select').val('');
+            }
+        });
+    });
 
     function fetchQRModalDetails(sessionId) {
         $.ajax({
