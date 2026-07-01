@@ -11,7 +11,7 @@
             <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">Instructor Account</p>
         </div>
         <div class="w-12 h-12 rounded-2xl border-2 border-slate-100 p-0.5 overflow-hidden shadow-sm">
-            <img src="{{ auth()->user()->image ? asset('storage/'.auth()->user()->image) : '/user.png' }}" class="w-full h-full object-cover rounded-[0.85rem]" alt="Profile" onerror="this.onerror=null; this.src='/user.png';">
+            <img src="{{ auth()->user()->image && auth()->user()->image !== 'user.png' ? asset('storage/'.auth()->user()->image) : '/user.png' }}" class="w-full h-full object-cover rounded-[0.85rem]" alt="Profile" onerror="this.onerror=null; this.src='/user.png';">
         </div>
     </div>
 </header>

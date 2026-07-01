@@ -223,7 +223,7 @@
                 list.empty();
                 if (res.status && res.data.length > 0) {
                     res.data.forEach(s => {
-                        const img = s.profile ? `/storage/${s.profile}` : '/user.png';
+                        const img = s.profile && s.profile !== 'user.png' && s.profile !== 'default.png' ? `/storage/${s.profile}` : '/user.png';
                         list.append(`
                             <div class="bg-white p-4 rounded-xl border border-slate-200 flex items-center gap-3 shadow-sm min-w-0">
                                 <img src="${img}" class="w-10 h-10 rounded-lg object-cover border border-slate-100 shrink-0" onerror="this.onerror=null; this.src='/user.png';">
@@ -267,7 +267,7 @@
                         const align = isMe ? 'flex-row-reverse' : 'flex-row';
                         const bg = isMe ? 'bg-indigo-650 text-white rounded-br-none' : 'bg-slate-100 text-slate-900 rounded-bl-none';
                         const time = new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                        const img = msg.user_image ? `/storage/${msg.user_image}` : '/user.png';
+                        const img = msg.user_image && msg.user_image !== 'user.png' && msg.user_image !== 'default.png' ? `/storage/${msg.user_image}` : '/user.png';
 
                         box.append(`
                             <div class="flex ${align} items-end gap-3 text-left" data-message-id="${msg.id}">
