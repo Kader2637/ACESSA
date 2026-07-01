@@ -134,6 +134,7 @@ Route::post('/zoom-meetings/end/{id}', [App\Http\Controllers\Api\ZoomMeetingCont
 Route::post('/attendance/create', [App\Http\Controllers\Api\AttendanceController::class, 'createSession']);
 Route::get('/classroom/{classId}/attendance/sessions', [App\Http\Controllers\Api\AttendanceController::class, 'getSessions']);
 Route::get('/attendance/session/{sessionId}/records', [App\Http\Controllers\Api\AttendanceController::class, 'getSessionDetails']);
+Route::post('/attendance/session/{sessionId}/extend', [App\Http\Controllers\Api\AttendanceController::class, 'extendSession']);
 Route::post('/attendance/code', [App\Http\Controllers\Api\AttendanceController::class, 'submitByCode']);
 Route::get('/classroom/{classId}/attendance/my', [App\Http\Controllers\Api\AttendanceController::class, 'getStudentAttendance']);
 

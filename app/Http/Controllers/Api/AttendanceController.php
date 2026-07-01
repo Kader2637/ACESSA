@@ -103,6 +103,33 @@ class AttendanceController extends Controller
         ]);
     }
 
+    public function extendSession(Request $request, $sessionId)
+    {
+        $request->validate([
+            'duration' => 'required|integer|min:1|max:1440',
+        ]);
+
+        $session = AttendanceSession::findOrFail($sessionId);
+
+        $currentValidUntil = Carbon::parse($session->valid_until);
+        $newValidUntil = $currentValidUntil->isPast()
+            ? Carbon::now()->addMinutes((int) $request->duration)
+            : $currentValidUntil->addMinutes((int) $request->duration);
+
+        $session->update([
+            'valid_until' => $newValidUntil
+        ]);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Sesi absensi berhasil diperpanjang.',
+            'data' => [
+                'valid_until' => $session->valid_until->toIso8601String(),
+                'is_expired' => $session->isExpired()
+            ]
+        ]);
+    }
+
     // === STUDENT ENDPOINTS ===
 
     // Manual code submission
