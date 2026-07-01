@@ -92,7 +92,7 @@
                         <option value="60">60 Menit</option>
                     </select>
                 </div>
-                <button type="submit" class="w-full py-4 bg-indigo-650 hover:bg-indigo-700 text-white font-black uppercase text-[10px] tracking-widest rounded-xl transition-all shadow-sm">
+                <button type="submit" class="w-full py-4 bg-indigo-600 hover:bg-indigo-700 text-white font-black uppercase text-[10px] tracking-widest rounded-xl transition-all shadow-sm">
                     ⚡ Buat Sesi & Tampilkan QR
                 </button>
             </form>

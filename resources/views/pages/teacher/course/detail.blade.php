@@ -670,7 +670,7 @@
                                     <p class="text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-6">ID: ${meetNum} &bull; Passcode: ${pwd}</p>
                                 </div>
                                 <div class="flex items-center gap-3">
-                                    <button onclick="startZoomSession('${meet.zoom_link}', '${pwd}')" class="flex-1 py-3.5 bg-slate-900 text-white font-black uppercase text-[9px] tracking-wider rounded-2xl hover:bg-indigo-650 transition-all flex items-center justify-center gap-2">
+                                    <button onclick="startZoomSession('${meet.zoom_link}', '${pwd}')" class="flex-1 py-3.5 bg-slate-900 text-white font-black uppercase text-[9px] tracking-wider rounded-2xl hover:bg-indigo-600 transition-all flex items-center justify-center gap-2">
                                         📹 Mulai Rapat
                                     </button>
                                     <button onclick="deleteZoomMeeting(${meet.id})" class="p-3.5 bg-red-50 text-red-600 rounded-2xl hover:bg-red-600 hover:text-white transition-all">
